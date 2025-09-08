@@ -72,10 +72,6 @@ const RelatorioNotificacoes: React.FC = () => {
         const todas: Notificacao[] = [];
         const anosDetectados = new Set<string>();
 
-        // const snapshot = await getDocs(collection(db, "notificacoes"));
-        // const grupos = snapshot.docs.map(doc => doc.id);
-        // console.log("Grupos encontrados:", grupos);
-
         for (const grupo of gruposNotificacoes) {
             console.log("Carregando grupo:", grupo);
 
@@ -86,52 +82,31 @@ const RelatorioNotificacoes: React.FC = () => {
                 const anoGrupo = grupo.substring(0, 4);
                 anosDetectados.add(anoGrupo);
 
-                for (const notificacaoDoc of notificacoesSnap.docs) {
-                    const codigo = notificacaoDoc.id;
+                for (const docSnap of notificacoesSnap.docs) {
+                    const data = docSnap.data();
 
-                    const dadosRef = doc(
-                        db,
-                        "notificacoes",
-                        grupo,
-                        "notificacoes",
-                        codigo,
-                        "notificacao",
-                        "dados"
-                    );
-
-                    try {
-                        const dadosSnap = await getDoc(dadosRef);
-
-                        if (dadosSnap.exists()) {
-                            const data = dadosSnap.data();
-
-                            if (data?.data && data?.garg && data?.ocorrencia) {
-                                todas.push({
-                                    data: data.data,
-                                    garg: data.garg,
-                                    ocorrencia: data.ocorrencia,
-                                    observacoes: data.observacoes || "",
-                                    hora: data.hora || "",
-                                    local: data.local || "",
-                                    carro: data.carro || "",
-                                    linha: data.linha || "",
-                                    agente: data.agente || "",
-                                    codigo: data.codigo || "",
-                                });
-                            } else {
-                                console.warn("Dados incompletos em:", dadosRef.path);
-                            }
-                        } else {
-                            console.warn("Documento 'dados' não encontrado em:", dadosRef.path);
-                        }
-                    } catch (err) {
-                        console.error("Erro lendo dados de:", codigo, err);
+                    if (data?.data && data?.garg && data?.ocorrencia) {
+                        todas.push({
+                            data: data.data,
+                            garg: data.garg,
+                            ocorrencia: data.ocorrencia,
+                            observacoes: data.observacoes || "",
+                            hora: data.hora || "",
+                            local: data.local || "",
+                            carro: data.carro || "",
+                            linha: data.linha || "",
+                            agente: data.agente || "",
+                            codigo: data.codigo || "",
+                        });
+                    } else {
+                        console.warn("Dados incompletos em:", docSnap.ref.path);
                     }
                 }
             } catch (err) {
                 console.error("Erro lendo notificações do grupo:", grupo, err);
             }
         }
+
         console.log("Total de notificações carregadas:", todas.length);
         setNotificacoes(todas);
         setAnos(Array.from(anosDetectados).sort());

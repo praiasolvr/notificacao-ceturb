@@ -362,17 +362,15 @@ const ImportarNotificacoes: React.FC = () => {
                 const decendio = obterDecendio(dia);
                 const caminho = `${ano}_${mes}_${decendio}`;
 
-                // ✅ Garante que o documento do decêndio existe
+                // 🔒 Garante que o documento do decêndio existe
                 const decendioRef = doc(db, "notificacoes", caminho);
                 await setDoc(decendioRef, { criadoEm: serverTimestamp() }, { merge: true });
 
-                // ✅ Garante que o documento do código existe dentro do decêndio
+                // ✅ Salva os dados diretamente no documento do código
                 const codigoRef = doc(db, `notificacoes/${caminho}/notificacoes/${codigo}`);
-                await setDoc(codigoRef, { criadoEm: serverTimestamp() }, { merge: true });
-
-                // ✅ Salva os dados dentro da subcoleção 'notificacao'
-                const notificacaoRef = doc(db, `notificacoes/${caminho}/notificacoes/${codigo}/notificacao/dados`);
-                await setDoc(notificacaoRef, {
+                await setDoc(codigoRef, {
+                    criadoEm: serverTimestamp(),
+                    atualizadoEm: serverTimestamp(),
                     codigo,
                     multa: item["MULTA"],
                     garg: item["GARG"],
@@ -383,9 +381,8 @@ const ImportarNotificacoes: React.FC = () => {
                     agente: item["AGENTE"],
                     ocorrencia: item["OCOR."],
                     local: item["CÓDIGO E LOCAL"],
-                    observacoes: item["OUTRAS OBSERVAÇÕES :"] || "",
-                    atualizadoEm: serverTimestamp()
-                });
+                    observacoes: item["OUTRAS OBSERVAÇÕES :"] || ""
+                }, { merge: true });
             }
 
             Swal.fire("Sucesso", "Notificações importadas com sucesso!", "success");
