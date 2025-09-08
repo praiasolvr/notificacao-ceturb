@@ -18,6 +18,7 @@ import {
 import { Bar } from "react-chartjs-2";
 import { FaCommentDots } from "react-icons/fa6";
 
+
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 interface Notificacao {
