@@ -65,32 +65,6 @@ const RelatorioNotificacoes: React.FC = () => {
 
     const [chatAberto, setChatAberto] = useState<string | null>(null);
 
-    useEffect(() => {
-        const carregarComentariosDaGaragem = async () => {
-            if (!anoSel || mesSel === null || !gargSel) return;
-
-            const grupo = `${anoSel}${(mesSel + 1).toString().padStart(2, "0")}`;
-            const notificacoesFiltradas = notificacoes.filter(n => n.garg === gargSel);
-
-            const notificacoesComComentarios = await Promise.all(
-                notificacoesFiltradas.map(async (n) => {
-                    const comentarios = await carregarComentarios(grupo, n.codigo);
-                    return { ...n, comentarios };
-                })
-            );
-
-            // Atualiza o estado geral com os comentários embutidos
-            setNotificacoes(prev =>
-                prev.map(n => {
-                    const atualizado = notificacoesComComentarios.find(nc => nc.codigo === n.codigo);
-                    return atualizado ? atualizado : n;
-                })
-            );
-        };
-
-        carregarComentariosDaGaragem();
-    }, [anoSel, mesSel, gargSel]);
-
 
     useEffect(() => {
         carregarDecendios();
@@ -163,20 +137,41 @@ const RelatorioNotificacoes: React.FC = () => {
         }
 
         // Carregar comentários para cada notificação
-        const todasComComentarios = await Promise.all(
-            todas.map(async (n) => {
-                const [dia, mes, ano] = n.data.split("/");
-                const grupo = `${ano}${mes}`;
-                const comentarios = await carregarComentarios(grupo, n.codigo);
-                return { ...n, comentarios };
-            })
-        );
+        // const todasComComentarios = await Promise.all(
+        //     todas.map(async (n) => {
+        //         const [dia, mes, ano] = n.data.split("/");
+        //         const grupo = `${ano}${mes}`;
+        //         const comentarios = await carregarComentarios(grupo, n.codigo);
+        //         return { ...n, comentarios };
+        //     })
+        // );
 
-        setNotificacoes(todasComComentarios);
+        setNotificacoes(todas);
         setAnos(Array.from(anosDetectados).sort());
 
-        console.log("Total de notificações carregadas:", todasComComentarios.length);
+        // console.log("Total de notificações carregadas:", todasComComentarios.length);
     }
+
+    useEffect(() => {
+        async function carregarComentariosDoGarg() {
+            if (!gargSel) return;
+
+            const notificacoesDoGarg = notificacoes.filter(n => n.garg === gargSel);
+            const notificacoesComComentarios = await Promise.all(
+                notificacoesDoGarg.map(async (n) => {
+                    const [dia, mes, ano] = n.data.split("/");
+                    const grupo = `${ano}${mes}`;
+                    const comentarios = await carregarComentarios(grupo, n.codigo);
+                    return { ...n, comentarios };
+                })
+            );
+
+            // Aqui você pode atualizar um novo estado, tipo:
+            // setNotificacoesComComentarios(notificacoesComComentarios);
+        }
+
+        carregarComentariosDoGarg();
+    }, [gargSel]);
 
     const porAno = anoSel
         ? notificacoes.filter((n) => n.data.split("/")[2] === anoSel)
@@ -188,7 +183,6 @@ const RelatorioNotificacoes: React.FC = () => {
             : [];
 
     const porGarg = gargSel ? porMes.filter((n) => n.garg === gargSel) : [];
-
 
     const totalPorMes = Array.from({ length: 12 }, (_, i) =>
         porAno.filter((n) => parseInt(n.data.split("/")[1], 10) === i + 1).length
