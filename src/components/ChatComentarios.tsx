@@ -41,7 +41,7 @@ export default function ChatComentarios({ grupo, codigo, onClose }: Props) {
     };
 
     return (
-        <div className="chat-popup border rounded p-3 bg-light position-fixed bottom-0 end-0 m-3" style={{ width: "350px", maxHeight: "400px", overflowY: "auto", zIndex: 9999 }}>
+        <div className="chat-popup border rounded p-3 bg-light mt-3" style={{ width: "100%", maxHeight: "400px", overflowY: "auto", zIndex: 1 }}>
             <div className="d-flex justify-content-between align-items-center mb-2">
                 <strong>Comentários — {codigo}</strong>
                 <button className="btn btn-sm btn-danger" onClick={onClose}>Fechar</button>

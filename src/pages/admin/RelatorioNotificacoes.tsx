@@ -19,7 +19,15 @@ import { Bar } from "react-chartjs-2";
 import { FaCommentDots } from "react-icons/fa6";
 
 
+import ChatComentarios from "../../components/ChatComentarios";
+
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+
+interface Comentario {
+    id: string;
+    autorNome: string;
+    mensagem: string;
+}
 
 interface Notificacao {
     data: string;
@@ -32,6 +40,7 @@ interface Notificacao {
     linha?: string;
     agente: string;
     codigo: string;
+    comentarios?: Comentario[]; // <- aqui está a mágica
 }
 
 const ordemGarg = [
@@ -52,6 +61,10 @@ const RelatorioNotificacoes: React.FC = () => {
     const [mesSel, setMesSel] = useState<number | null>(null);
     const [gargSel, setGargSel] = useState<string | null>(null);
     const [ocorrenciaSel, setOcorrenciaSel] = useState<string | null>(null);
+
+
+    const [chatAberto, setChatAberto] = useState<string | null>(null);
+
 
     useEffect(() => {
         carregarDecendios();
@@ -180,6 +193,12 @@ const RelatorioNotificacoes: React.FC = () => {
         overflow: "auto",
     };
 
+
+    const getGrupoFromData = (data: string): string => {
+        const [dia, mes, ano] = data.split("/"); // "21/02/2025" → ["21", "02", "2025"]
+        return `${ano}${mes}`; // → "202502"
+    };
+
     return (
         <div className="container mt-4">
             <h2>Relatório de Notificações por Decêndio</h2>
@@ -287,9 +306,12 @@ const RelatorioNotificacoes: React.FC = () => {
                                 <li key={idx} className="list-group-item">
                                     <div
                                         className="position-absolute top-0 end-0 m-2 fs-2 cursor-pointer"
-                                        onClick={() => alert('Você clicou no ícone do botão: ' + n.codigo)}
+                                        onClick={() => setChatAberto(n.codigo)}
                                     >
                                         <FaCommentDots />
+                                    </div>
+                                    <div className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center" onClick={() => setChatAberto(n.codigo)}>
+                                        <span className="badge bg-secondary ms-1">{n.comentarios?.length || 0}</span>
                                     </div>
                                     <strong>Codigo:</strong> {n.codigo} <br />
                                     <strong>Data:</strong> {n.data} {n.hora} <br />
@@ -299,6 +321,15 @@ const RelatorioNotificacoes: React.FC = () => {
                                     <strong>Carro:</strong> {n.carro}<br />
                                     <strong>Linha:</strong> {n.linha}<br />
                                     <strong>Agente:</strong> {n.agente}<br />
+
+                                    {/* <ChatComentarios
+                                    grupo={anoSel ? `${anoSel}01` : "202301"}
+                                    codigo={"EXEMPLO123"}
+                                    onClose={() =>
+                                        alert('Fechar chat')}
+                                /> */}
+
+
                                 </li>
                             ))}
                     </ul>
@@ -313,9 +344,13 @@ const RelatorioNotificacoes: React.FC = () => {
                             <li key={idx} className="list-group-item">
                                 <div
                                     className="position-absolute top-0 end-0 m-2 fs-2 cursor-pointer"
-                                    onClick={() => alert('Você clicou no ícone do botão: ' + n.codigo)}
+                                    onClick={() => setChatAberto(n.codigo)}
                                 >
                                     <FaCommentDots />
+                                </div>
+                                <div className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center" onClick={() => setChatAberto(n.codigo)}>
+
+                                    <span className="badge bg-secondary ms-1">{n.comentarios?.length || 0}</span>
                                 </div>
                                 <strong>Codigo:</strong> {n.codigo} <br />
                                 <strong>Data:</strong> {n.data} {n.hora} <br />
@@ -325,11 +360,50 @@ const RelatorioNotificacoes: React.FC = () => {
                                 <strong>Carro:</strong> {n.carro}<br />
                                 <strong>Linha:</strong> {n.linha}<br />
                                 <strong>Agente:</strong> {n.agente}<br />
+
+                                {/* <ChatComentarios
+                                    grupo={anoSel ? `${anoSel}01` : "202301"}
+                                    codigo={"EXEMPLO123"}
+                                    onClose={() =>
+                                        alert('Fechar chat')}
+                                /> */}
+
+
                             </li>
                         ))}
                     </ul>
                 </div>
             )}
+
+            {chatAberto && (
+                <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+                    <div className="modal-dialog modal-lg">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Comentários — {chatAberto}</h5>
+                                <button type="button" className="btn-close" onClick={() => setChatAberto(null)}></button>
+                            </div>
+                            <div className="modal-body">
+                                <ChatComentarios
+                                    grupo={anoSel && mesSel !== null ? `${anoSel}${(mesSel + 1).toString().padStart(2, "0")}` : "indefinido"}
+                                    codigo={chatAberto}
+                                    onClose={() => setChatAberto(null)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Componente de chat de comentários */}
+            {/* Substitua 'grupo' e 'codigo' pelos valores reais conforme necessário */}
+            {/* <ChatComentarios
+                grupo={anoSel ? `${anoSel}01` : "202301"}
+                codigo={"EXEMPLO123"}
+                onClose={() =>
+                    alert('Fechar chat')}
+            /> */}
+
         </div>
     );
 };
