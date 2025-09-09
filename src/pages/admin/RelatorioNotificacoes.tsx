@@ -76,10 +76,19 @@ const RelatorioNotificacoes: React.FC = () => {
         }
     }, [gruposNotificacoes]);
 
-    async function carregarComentarios(grupo: string, codigo: string): Promise<number> {
-        const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios");
-        const snapshot = await getDocs(comentariosRef);
-        return snapshot.size; // retorna a quantidade
+    async function carregarComentarios(grupo: string, codigo: string): Promise<Comentario[]> {
+        try {
+            const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios");
+            const snapshot = await getDocs(comentariosRef);
+            return snapshot.docs.map(doc => ({
+                id: doc.id,
+                autorNome: doc.data().autorNome,
+                mensagem: doc.data().mensagem,
+            }));
+        } catch (err) {
+            console.error(`Erro ao carregar comentários para ${codigo}:`, err);
+            return [];
+        }
     }
 
     async function carregarDecendios() {
@@ -127,15 +136,12 @@ const RelatorioNotificacoes: React.FC = () => {
             }
         }
 
-        // Agora que todas foram carregadas, vamos buscar os comentários
+        // Carregar comentários para cada notificação
         const todasComComentarios = await Promise.all(
             todas.map(async (n) => {
                 const [dia, mes, ano] = n.data.split("/");
                 const grupo = `${ano}${mes}`;
-                const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", n.codigo, "comentarios");
-                const snapshot = await getDocs(comentariosRef);
-                const comentarios = snapshot.docs.map(doc => doc.data() as Comentario);
-
+                const comentarios = await carregarComentarios(grupo, n.codigo);
                 return { ...n, comentarios };
             })
         );
