@@ -65,6 +65,32 @@ const RelatorioNotificacoes: React.FC = () => {
 
     const [chatAberto, setChatAberto] = useState<string | null>(null);
 
+    useEffect(() => {
+        const carregarComentariosDaGaragem = async () => {
+            if (!anoSel || mesSel === null || !gargSel) return;
+
+            const grupo = `${anoSel}${(mesSel + 1).toString().padStart(2, "0")}`;
+            const notificacoesFiltradas = notificacoes.filter(n => n.garg === gargSel);
+
+            const notificacoesComComentarios = await Promise.all(
+                notificacoesFiltradas.map(async (n) => {
+                    const comentarios = await carregarComentarios(grupo, n.codigo);
+                    return { ...n, comentarios };
+                })
+            );
+
+            // Atualiza o estado geral com os comentários embutidos
+            setNotificacoes(prev =>
+                prev.map(n => {
+                    const atualizado = notificacoesComComentarios.find(nc => nc.codigo === n.codigo);
+                    return atualizado ? atualizado : n;
+                })
+            );
+        };
+
+        carregarComentariosDaGaragem();
+    }, [anoSel, mesSel, gargSel]);
+
 
     useEffect(() => {
         carregarDecendios();
@@ -162,6 +188,7 @@ const RelatorioNotificacoes: React.FC = () => {
             : [];
 
     const porGarg = gargSel ? porMes.filter((n) => n.garg === gargSel) : [];
+
 
     const totalPorMes = Array.from({ length: 12 }, (_, i) =>
         porAno.filter((n) => parseInt(n.data.split("/")[1], 10) === i + 1).length
