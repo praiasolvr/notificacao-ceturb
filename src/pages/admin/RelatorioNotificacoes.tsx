@@ -76,6 +76,12 @@ const RelatorioNotificacoes: React.FC = () => {
         }
     }, [gruposNotificacoes]);
 
+    async function carregarComentarios(grupo: string, codigo: string): Promise<number> {
+        const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios");
+        const snapshot = await getDocs(comentariosRef);
+        return snapshot.size; // retorna a quantidade
+    }
+
     async function carregarDecendios() {
         const snapshot = await getDocs(collection(db, "notificacoes"));
         const grupos = snapshot.docs.map(doc => doc.id);
@@ -121,9 +127,23 @@ const RelatorioNotificacoes: React.FC = () => {
             }
         }
 
-        console.log("Total de notificações carregadas:", todas.length);
-        setNotificacoes(todas);
+        // Agora que todas foram carregadas, vamos buscar os comentários
+        const todasComComentarios = await Promise.all(
+            todas.map(async (n) => {
+                const [dia, mes, ano] = n.data.split("/");
+                const grupo = `${ano}${mes}`;
+                const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", n.codigo, "comentarios");
+                const snapshot = await getDocs(comentariosRef);
+                const comentarios = snapshot.docs.map(doc => doc.data() as Comentario);
+
+                return { ...n, comentarios };
+            })
+        );
+
+        setNotificacoes(todasComComentarios);
         setAnos(Array.from(anosDetectados).sort());
+
+        console.log("Total de notificações carregadas:", todasComComentarios.length);
     }
 
     const porAno = anoSel
