@@ -129,7 +129,7 @@ const RelatorioNotificacoes: React.FC = () => {
         }
     }
 
-    
+
 
     async function carregarDecendios() {
         const snapshot = await getDocs(collection(db, "notificacoes"));
@@ -398,11 +398,14 @@ const RelatorioNotificacoes: React.FC = () => {
                                     >
                                         <FaCommentDots />
                                     </div>
-                                    <div className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center" onClick={() => setChatAberto(n.codigo)}>
-
-                                        <span className="badge bg-secondary ms-1">{n.comentarios?.length || 0}</span>
-
-
+                                    <div className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center"
+                                        onClick={() => setChatAberto(n.codigo)}
+                                    >
+                                        <span
+                                            className={`badge ms-1 ${n.comentarios && n.comentarios.length > 0 ? 'bg-danger' : 'bg-secondary'}`}
+                                        >
+                                            {n.comentarios?.length || 0}
+                                        </span>
                                     </div>
                                     <strong>Codigo:</strong> {n.codigo} <br />
                                     <strong>Data:</strong> {n.data} {n.hora} <br />
@@ -437,7 +440,6 @@ const RelatorioNotificacoes: React.FC = () => {
                                     className="position-absolute top-1 end-0 me-3 m-1 fs-1 cursor-pointer"
                                     onClick={() => setChatAberto(n.codigo)}
                                 >
-
                                     <FaCommentDots />
                                 </div>
                                 <div
