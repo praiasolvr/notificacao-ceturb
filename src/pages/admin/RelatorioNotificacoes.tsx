@@ -76,6 +76,22 @@ const RelatorioNotificacoes: React.FC = () => {
         }
     }, [gruposNotificacoes]);
 
+//     useEffect(() => {
+//     const carregarComentariosParaNotificacoes = async () => {
+//         const notificacoesComComentarios = await Promise.all(
+//             notificacoes.map(async (n) => {
+//                 const [dia, mes, ano] = n.data.split("/");
+//                 const grupo = `${ano}${mes}`;
+//                 const comentarios = await carregarComentarios(grupo, n.codigo);
+//                 return { ...n, comentarios };
+//             })
+//         );
+//         setNotificacoes(notificacoesComComentarios);
+//     };
+
+//     carregarComentariosParaNotificacoes();
+// }, [notificacoes]);  // Isso será executado assim que as notificações forem carregadas
+
     async function carregarComentarios(grupo: string, codigo: string): Promise<Comentario[]> {
         try {
             const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios");
