@@ -41,6 +41,7 @@ interface Notificacao {
     agente: string;
     codigo: string;
     comentarios?: Comentario[]; // <- aqui está a mágica
+    qtdComentarios: number;
 }
 
 const ordemGarg = [
@@ -76,36 +77,59 @@ const RelatorioNotificacoes: React.FC = () => {
         }
     }, [gruposNotificacoes]);
 
-//     useEffect(() => {
-//     const carregarComentariosParaNotificacoes = async () => {
-//         const notificacoesComComentarios = await Promise.all(
-//             notificacoes.map(async (n) => {
-//                 const [dia, mes, ano] = n.data.split("/");
-//                 const grupo = `${ano}${mes}`;
-//                 const comentarios = await carregarComentarios(grupo, n.codigo);
-//                 return { ...n, comentarios };
-//             })
-//         );
-//         setNotificacoes(notificacoesComComentarios);
-//     };
+    //     useEffect(() => {
+    //     const carregarComentariosParaNotificacoes = async () => {
+    //         const notificacoesComComentarios = await Promise.all(
+    //             notificacoes.map(async (n) => {
+    //                 const [dia, mes, ano] = n.data.split("/");
+    //                 const grupo = `${ano}${mes}`;
+    //                 const comentarios = await carregarComentarios(grupo, n.codigo);
+    //                 return { ...n, comentarios };
+    //             })
+    //         );
+    //         setNotificacoes(notificacoesComComentarios);
+    //     };
 
-//     carregarComentariosParaNotificacoes();
-// }, [notificacoes]);  // Isso será executado assim que as notificações forem carregadas
+    //     carregarComentariosParaNotificacoes();
+    // }, [notificacoes]);  // Isso será executado assim que as notificações forem carregadas
 
     async function carregarComentarios(grupo: string, codigo: string): Promise<Comentario[]> {
         try {
+            // Carrega os comentários do Firestore
             const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios");
             const snapshot = await getDocs(comentariosRef);
-            return snapshot.docs.map(doc => ({
+
+            // console.log("Comentários carregados para", codigo, snapshot.docs.length);
+
+            // Mapeia os dados dos comentários
+            const comentariosData = snapshot.docs.map(doc => ({
                 id: doc.id,
                 autorNome: doc.data().autorNome,
                 mensagem: doc.data().mensagem,
             }));
+
+            // Atualiza a quantidade de comentários na notificação
+            setNotificacoes((prevNotificacoes) =>
+                prevNotificacoes.map((notificacao) =>
+                    notificacao.codigo === codigo
+                        ? {
+                            ...notificacao,
+                            comentarios: comentariosData, // Atualiza os comentários
+                            qtdComentarios: comentariosData.length // Atualiza a quantidade de comentários
+                        }
+                        : notificacao
+                )
+            );
+
+            // Retorna os comentários carregados
+            return comentariosData;
         } catch (err) {
             console.error(`Erro ao carregar comentários para ${codigo}:`, err);
             return [];
         }
     }
+
+    
 
     async function carregarDecendios() {
         const snapshot = await getDocs(collection(db, "notificacoes"));
@@ -118,7 +142,7 @@ const RelatorioNotificacoes: React.FC = () => {
         const anosDetectados = new Set<string>();
 
         for (const grupo of gruposNotificacoes) {
-            console.log("Carregando grupo:", grupo);
+            // console.log("Carregando grupo:", grupo);
 
             const notificacoesRef = collection(db, "notificacoes", grupo, "notificacoes");
 
@@ -142,6 +166,7 @@ const RelatorioNotificacoes: React.FC = () => {
                             linha: data.linha || "",
                             agente: data.agente || "",
                             codigo: data.codigo || "",
+                            qtdComentarios: 0, // Inicialmente zero, será atualizado depois
                         });
                     } else {
                         console.warn("Dados incompletos em:", docSnap.ref.path);
@@ -374,7 +399,10 @@ const RelatorioNotificacoes: React.FC = () => {
                                         <FaCommentDots />
                                     </div>
                                     <div className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center" onClick={() => setChatAberto(n.codigo)}>
+
                                         <span className="badge bg-secondary ms-1">{n.comentarios?.length || 0}</span>
+
+
                                     </div>
                                     <strong>Codigo:</strong> {n.codigo} <br />
                                     <strong>Data:</strong> {n.data} {n.hora} <br />
@@ -406,14 +434,21 @@ const RelatorioNotificacoes: React.FC = () => {
                         {porGarg.map((n, idx) => (
                             <li key={idx} className="list-group-item">
                                 <div
-                                    className="position-absolute top-0 end-0 m-2 fs-2 cursor-pointer"
+                                    className="position-absolute top-1 end-0 me-3 m-1 fs-1 cursor-pointer"
                                     onClick={() => setChatAberto(n.codigo)}
                                 >
+
                                     <FaCommentDots />
                                 </div>
-                                <div className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center" onClick={() => setChatAberto(n.codigo)}>
-
-                                    <span className="badge bg-secondary ms-1">{n.comentarios?.length || 0}</span>
+                                <div
+                                    className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center"
+                                    onClick={() => setChatAberto(n.codigo)}
+                                >
+                                    <span
+                                        className={`badge ms-1 ${n.comentarios && n.comentarios.length > 0 ? 'bg-danger' : 'bg-secondary'}`}
+                                    >
+                                        {n.comentarios?.length || 0}
+                                    </span>
                                 </div>
                                 <strong>Codigo:</strong> {n.codigo} <br />
                                 <strong>Data:</strong> {n.data} {n.hora} <br />
