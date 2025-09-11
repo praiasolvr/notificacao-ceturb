@@ -23,6 +23,7 @@ import ChatComentarios from "../../components/ChatComentarios";
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
+
 interface Comentario {
     id: string;
     autorNome: string;
@@ -94,6 +95,7 @@ const RelatorioNotificacoes: React.FC = () => {
     // }, [notificacoes]);  // Isso será executado assim que as notificações forem carregadas
 
     async function carregarComentarios(grupo: string, codigo: string): Promise<Comentario[]> {
+
         try {
             // Carrega os comentários do Firestore
             const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios");
@@ -138,6 +140,7 @@ const RelatorioNotificacoes: React.FC = () => {
     }
 
     async function carregarTodos() {
+        console.log("carregarTodos");
         const todas: Notificacao[] = [];
         const anosDetectados = new Set<string>();
 
@@ -416,14 +419,6 @@ const RelatorioNotificacoes: React.FC = () => {
                                     <strong>Linha:</strong> {n.linha}<br />
                                     <strong>Agente:</strong> {n.agente}<br />
 
-                                    {/* <ChatComentarios
-                                    grupo={anoSel ? `${anoSel}01` : "202301"}
-                                    codigo={"EXEMPLO123"}
-                                    onClose={() =>
-                                        alert('Fechar chat')}
-                                /> */}
-
-
                                 </li>
                             ))}
                     </ul>
@@ -461,12 +456,7 @@ const RelatorioNotificacoes: React.FC = () => {
                                 <strong>Linha:</strong> {n.linha}<br />
                                 <strong>Agente:</strong> {n.agente}<br />
 
-                                {/* <ChatComentarios
-                                    grupo={anoSel ? `${anoSel}01` : "202301"}
-                                    codigo={"EXEMPLO123"}
-                                    onClose={() =>
-                                        alert('Fechar chat')}
-                                /> */}
+                              
 
 
                             </li>
@@ -481,13 +471,14 @@ const RelatorioNotificacoes: React.FC = () => {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title">Comentários — {chatAberto}</h5>
-                                <button type="button" className="btn-close" onClick={() => setChatAberto(null)}></button>
+                                <button type="button" className="btn-close" onClick={() => setChatAberto(null)} />
                             </div>
                             <div className="modal-body">
                                 <ChatComentarios
                                     grupo={anoSel && mesSel !== null ? `${anoSel}${(mesSel + 1).toString().padStart(2, "0")}` : "indefinido"}
                                     codigo={chatAberto}
                                     onClose={() => setChatAberto(null)}
+                                    setNotificacoes={setNotificacoes} // ✅ aqui está a correção
                                 />
                             </div>
                         </div>
@@ -495,14 +486,7 @@ const RelatorioNotificacoes: React.FC = () => {
                 </div>
             )}
 
-            {/* Componente de chat de comentários */}
-            {/* Substitua 'grupo' e 'codigo' pelos valores reais conforme necessário */}
-            {/* <ChatComentarios
-                grupo={anoSel ? `${anoSel}01` : "202301"}
-                codigo={"EXEMPLO123"}
-                onClose={() =>
-                    alert('Fechar chat')}
-            /> */}
+           
 
         </div>
     );

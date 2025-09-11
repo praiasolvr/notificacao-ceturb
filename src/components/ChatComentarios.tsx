@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, addDoc, query, orderBy, onSnapshot, Timestamp, doc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, query, orderBy, onSnapshot, Timestamp, doc, updateDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig"; // caminho correto
 import { useUser } from "../contexts/UserContext"; // hook correto
 
@@ -16,10 +16,10 @@ interface Props {
     grupo: string;
     codigo: string;
     onClose: () => void;
-    
+    setNotificacoes: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-export default function ChatComentarios({ grupo, codigo, onClose }: Props) {
+export default function ChatComentarios({ grupo, codigo, onClose, setNotificacoes }: Props) {
     const [mensagem, setMensagem] = useState("");
     const [comentarios, setComentarios] = useState<Comentario[]>([]); // Tipando os comentários
     const [editandoComentario, setEditandoComentario] = useState<Comentario | null>(null); // Para editar um comentário
@@ -41,50 +41,56 @@ export default function ChatComentarios({ grupo, codigo, onClose }: Props) {
     const enviarComentario = async () => {
         if (!mensagem.trim() || !user?.uid) return;
 
-        if (editandoComentario) {
-            // Caso esteja editando um comentário, faz o update
-            const comentarioRef = doc(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios", editandoComentario.id);
-            await updateDoc(comentarioRef, {
-                mensagem,
-                autorId: user.uid,
-                autorNome: user.displayName || user.email,
-                criadoEm: Timestamp.now()
-            });
-        } else {
-            // Caso contrário, cria um novo comentário
-            const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios");
-            await addDoc(comentariosRef, {
-                autorId: user.uid,
-                autorNome: user.displayName || user.email,
-                mensagem,
-                criadoEm: Timestamp.now()
-            });
-        }
-
-        // Recalcular o contador de comentários e atualizar o estado
-        setMensagem("");
-        setEditandoComentario(null); // Limpa o comentário em edição
+        const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios");
 
         try {
-            const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios");
-            const snapshot = await onSnapshot(comentariosRef);
+            if (editandoComentario) {
+                // Atualiza comentário existente
+                const comentarioRef = doc(comentariosRef, editandoComentario.id);
+                await updateDoc(comentarioRef, {
+                    mensagem,
+                    autorId: user.uid,
+                    autorNome: user.displayName || user.email,
+                    criadoEm: Timestamp.now()
+                });
+            } else {
+                // Adiciona novo comentário
+                await addDoc(comentariosRef, {
+                    autorId: user.uid,
+                    autorNome: user.displayName || user.email,
+                    mensagem,
+                    criadoEm: Timestamp.now()
+                });
+            }
 
-            // Verificar se snapshot.docs existe e tem dados
-            const qtdComentarios = snapshot?.docs?.length || 0;
+            // Limpa campos
+            setMensagem("");
+            setEditandoComentario(null);
 
-            // Atualizar a quantidade de comentários no estado da notificação
+            // Recarrega os comentários atualizados
+            const snapshot = await getDocs(comentariosRef);
+            const comentariosData = snapshot.docs.map(doc => ({
+                id: doc.id,
+                autorNome: doc.data().autorNome,
+                mensagem: doc.data().mensagem,
+            }));
+
+            const qtdComentarios = comentariosData.length;
+
+            // Atualiza o estado de notificações no componente pai
             setNotificacoes((prevNotificacoes) =>
                 prevNotificacoes.map((notificacao) =>
                     notificacao.codigo === codigo
                         ? {
                             ...notificacao,
-                            qtdComentarios  // Atualiza a quantidade de comentários
+                            comentarios: comentariosData,
+                            qtdComentarios
                         }
                         : notificacao
                 )
             );
         } catch (error) {
-            console.error("Erro ao calcular a quantidade de comentários:", error);
+            console.error("Erro ao enviar ou atualizar comentário:", error);
         }
     };
 
