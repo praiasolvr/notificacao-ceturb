@@ -28,7 +28,8 @@
     "react-number-format": "^5.4.4",
     "react-router-dom": "^7.5.0",
     "react-select": "^5.10.1",
-    "sweetalert2": "^11.18.0"
+    "sweetalert2": "^11.18.0",
+    "vite-plugin-svgr": "^4.5.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

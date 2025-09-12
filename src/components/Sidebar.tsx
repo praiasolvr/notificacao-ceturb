@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaHome, FaSignOutAlt } from 'react-icons/fa';
-import { BsCameraReelsFill } from 'react-icons/bs';
+
+import IconNotification from '../assets/icon-notificacao.svg';
+
+
 import { useUser } from '../contexts/UserContext';
 import { getAuth, signOut } from 'firebase/auth';
 import { TbReport } from "react-icons/tb";
 import { BiSolidReport } from "react-icons/bi";
 
 interface SidebarProps {
-  isOpen: boolean;
+  isOpen: boolean;  
   onClose: () => void;
 }
 
@@ -104,10 +107,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </button>
         )}
         <div style={headerStyle}>
-          <div style={{ fontSize: '2rem' }}><BsCameraReelsFill /></div>
-          <span style={{ color: '#ffc107' }}>Praia Sol</span>
+          {/* <div style={{ fontSize: '3rem' }}><TbReportAnalytics /></div> */}
+          <img src={IconNotification} alt="Ícone de notificação" style={{ width: '4rem', color: 'red' }} />
           <br />
-          <span style={{ color: '#ffc107' }}>Vereda</span>
+          <span style={{ color: '#ffc107' }}>Praia Sol </span>
+          {/* <br /> */}
+          <span style={{ color: '#45ce38ff' }}>Vereda</span>
         </div>
       </div>
 
