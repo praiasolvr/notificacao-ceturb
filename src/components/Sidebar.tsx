@@ -127,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           style={{ ...linkStyle, ...(location.pathname.startsWith('/importar-notificacoes') ? activeLinkStyle : {}) }}>
           <TbReport style={iconStyle} /> Importar Notificações
         </Link>
-
+ 
         {/* <Link to="/relatorio-solicitacoes" onClick={handleLinkClick}
           style={{ ...linkStyle, ...(location.pathname.startsWith('/relatorio-solicitacoes') ? activeLinkStyle : {}) }}>
           <BiSolidReport style={iconStyle} /> Visualizar Notificações

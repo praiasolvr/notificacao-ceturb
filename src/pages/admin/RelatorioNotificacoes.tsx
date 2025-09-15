@@ -18,6 +18,8 @@ import {
 import { Bar } from "react-chartjs-2";
 import { FaCommentDots } from "react-icons/fa6";
 
+import { Spinner } from "react-bootstrap";
+
 
 import ChatComentarios from "../../components/ChatComentarios";
 
@@ -64,6 +66,8 @@ const RelatorioNotificacoes: React.FC = () => {
     const [gargSel, setGargSel] = useState<string | null>(null);
     const [ocorrenciaSel, setOcorrenciaSel] = useState<string | null>(null);
 
+
+    const [loading, setLoading] = useState(true);
 
     const [chatAberto, setChatAberto] = useState<string | null>(null);
 
@@ -134,6 +138,7 @@ const RelatorioNotificacoes: React.FC = () => {
 
 
     async function carregarDecendios() {
+        setLoading(true); // 👈 começa carregamento
         const snapshot = await getDocs(collection(db, "notificacoes"));
         const grupos = snapshot.docs.map(doc => doc.id);
         setGruposNotificacoes(grupos);
@@ -141,6 +146,7 @@ const RelatorioNotificacoes: React.FC = () => {
 
     async function carregarTodos() {
         console.log("carregarTodos");
+        setLoading(true); // 👈 começa carregamento
         const todas: Notificacao[] = [];
         const anosDetectados = new Set<string>();
 
@@ -192,7 +198,7 @@ const RelatorioNotificacoes: React.FC = () => {
 
         setNotificacoes(todas);
         setAnos(Array.from(anosDetectados).sort());
-
+        setLoading(false); // 👈 terminou carregamento
         // console.log("Total de notificações carregadas:", todasComComentarios.length);
     }
 
@@ -289,6 +295,17 @@ const RelatorioNotificacoes: React.FC = () => {
         const [dia, mes, ano] = data.split("/"); // "21/02/2025" → ["21", "02", "2025"]
         return `${ano}${mes}`; // → "202502"
     };
+
+
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+                <Spinner animation="border" variant="primary" role="status">
+                    <span className="visually-hidden">Carregando...</span>
+                </Spinner>
+            </div>
+        );
+    }
 
     return (
         <div className="container mt-4">
@@ -456,7 +473,7 @@ const RelatorioNotificacoes: React.FC = () => {
                                 <strong>Linha:</strong> {n.linha}<br />
                                 <strong>Agente:</strong> {n.agente}<br />
 
-                              
+
 
 
                             </li>
@@ -486,7 +503,8 @@ const RelatorioNotificacoes: React.FC = () => {
                 </div>
             )}
 
-           
+
+
 
         </div>
     );
