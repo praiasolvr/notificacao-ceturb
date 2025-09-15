@@ -16,6 +16,10 @@ const Login = () => {
   const [senha, setSenha] = useState('cct1254');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [nome, setNome] = useState('');
+
+  const [setor, setSetor] = useState('');
+  const [funcao, setFuncao] = useState('');
+
   const { setUser } = useUser();
   const navigate = useNavigate();
 
@@ -107,6 +111,8 @@ const Login = () => {
             email: userCredential.user.email,
             uid: uid,
             displayName: userCredential.user.displayName,
+            setor: userCredential.user.setor,
+            funcao: funcao,
           }
         );
 
@@ -114,7 +120,10 @@ const Login = () => {
         await setDoc(doc(db, 'clientes', uid), {
           nome,
           email,
-          endereco: '', // inicial vazio para ser editado depois
+          endereco: '', // inicial vazio para ser editado depois TODO: talvez remover
+          setor,
+          funcao,
+          criadoEm: new Date(),
         });
 
         Swal.fire({
@@ -229,6 +238,32 @@ const Login = () => {
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                   placeholder='Digite seu nome completo'
+                  required
+                  style={{ padding: '10px', borderRadius: '8px' }}
+                />
+              </div>
+
+              <div className='mb-3'>
+                <label className='form-label' style={{ color: '#444' }}>Setor</label>
+                <input
+                  type='text'
+                  className='form-control'
+                  value={setor}
+                  onChange={(e) => setSetor(e.target.value)}
+                  placeholder='Digite o setor em que trabalha'
+                  required
+                  style={{ padding: '10px', borderRadius: '8px' }}
+                />
+              </div>
+
+              <div className='mb-3'>
+                <label className='form-label' style={{ color: '#444' }}>Função</label>
+                <input
+                  type='text'
+                  className='form-control'
+                  value={funcao}
+                  onChange={(e) => setFuncao(e.target.value)}
+                  placeholder='Digite sua função na empresa'
                   required
                   style={{ padding: '10px', borderRadius: '8px' }}
                 />

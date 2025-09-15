@@ -103,8 +103,8 @@ export default function ChatComentarios({ grupo, codigo, onClose, setNotificacoe
     return (
         <div className="chat-popup border rounded p-3 bg-light mt-3" style={{ width: "100%", maxHeight: "400px", overflowY: "auto", zIndex: 1 }}>
             <div className="d-flex justify-content-between align-items-center mb-2">
-                <strong>Comentários — {codigo}</strong>
-                <button className="btn btn-sm btn-danger" onClick={onClose}>Fechar</button>
+                <strong>Comentários:</strong>
+                {/* <button className="btn btn-sm btn-danger" onClick={onClose}>Fechar</button> */}
             </div>
             <div className="mb-2">
                 {comentarios.map((c) => (

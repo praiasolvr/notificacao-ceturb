@@ -66,6 +66,7 @@ const RelatorioNotificacoes: React.FC = () => {
     const [gargSel, setGargSel] = useState<string | null>(null);
     const [ocorrenciaSel, setOcorrenciaSel] = useState<string | null>(null);
 
+    const [statusSel, setStatusSel] = useState<string | null>(null);
 
     const [loading, setLoading] = useState(true);
 
@@ -145,7 +146,7 @@ const RelatorioNotificacoes: React.FC = () => {
     }
 
     async function carregarTodos() {
-        console.log("carregarTodos");
+        // console.log("carregarTodos");
         setLoading(true); // 👈 começa carregamento
         const todas: Notificacao[] = [];
         const anosDetectados = new Set<string>();
@@ -297,6 +298,18 @@ const RelatorioNotificacoes: React.FC = () => {
     };
 
 
+    const handleSave = () => {
+        // aqui você envia statusSel para o servidor/Firestore/etc
+        console.log("Status salvo:", statusSel ?? "Em Análise");
+        alert(`Status salvo: ${statusSel ?? "Em Análise"}`);
+    };
+
+    const toggleStatus = (status: string) => {
+        // Se clicar no que já está selecionado, desmarca tudo
+        setStatusSel(prev => (prev === status ? null : status));
+    };
+
+
     if (loading) {
         return (
             <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
@@ -418,6 +431,8 @@ const RelatorioNotificacoes: React.FC = () => {
                                     >
                                         <FaCommentDots />
                                     </div>
+                                    <div>
+                                    </div>
                                     <div className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center"
                                         onClick={() => setChatAberto(n.codigo)}
                                     >
@@ -427,7 +442,7 @@ const RelatorioNotificacoes: React.FC = () => {
                                             {n.comentarios?.length || 0}
                                         </span>
                                     </div>
-                                    <strong>Codigo:</strong> {n.codigo} <br />
+                                    <strong>Código:</strong> {n.codigo} <br />
                                     <strong>Data:</strong> {n.data} {n.hora} <br />
                                     <strong>Ocorrência:</strong> {n.ocorrencia} <br />
                                     <strong>Observação:</strong> {n.observacoes}<br />
@@ -486,17 +501,63 @@ const RelatorioNotificacoes: React.FC = () => {
                 <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
                     <div className="modal-dialog modal-lg">
                         <div className="modal-content">
+
                             <div className="modal-header">
-                                <h5 className="modal-title">Comentários — {chatAberto}</h5>
+                                <h5 className="modal-title">Código / N° Notificação — {chatAberto}</h5>
                                 <button type="button" className="btn-close" onClick={() => setChatAberto(null)} />
                             </div>
+
+
                             <div className="modal-body">
+                                {/* Somente o juridico irá ter acesso a essa seleção */}
+                                <span>
+                                    <strong>Recurso:</strong>
+                                </span>
+                                <div className="d-flex align-items-center gap-3">
+                                    {/* Recorrível */}
+                                    <div className="form-check form-check-inline">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox" // mudou para checkbox
+                                            id="recorrivel"
+                                            checked={statusSel === "Recorrivel"}
+                                            onChange={() => toggleStatus("Recorrivel")}
+                                        />
+                                        <label className="form-check-label" htmlFor="recorrivel">
+                                            Recorrível
+                                        </label>
+                                    </div>
+
+                                    {/* Irrecorrível */}
+                                    <div className="form-check form-check-inline">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox" // mudou para checkbox
+                                            id="irrecorrivel"
+                                            checked={statusSel === "Irrecorrivel"}
+                                            onChange={() => toggleStatus("Irrecorrivel")}
+                                        />
+                                        <label className="form-check-label" htmlFor="irrecorrivel">
+                                            Irrecorrível
+                                        </label>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary btn-sm"
+                                        onClick={handleSave}
+                                    >
+                                        Salvar
+                                    </button>
+                                </div>
+
                                 <ChatComentarios
                                     grupo={anoSel && mesSel !== null ? `${anoSel}${(mesSel + 1).toString().padStart(2, "0")}` : "indefinido"}
                                     codigo={chatAberto}
                                     onClose={() => setChatAberto(null)}
                                     setNotificacoes={setNotificacoes} // ✅ aqui está a correção
                                 />
+
                             </div>
                         </div>
                     </div>
