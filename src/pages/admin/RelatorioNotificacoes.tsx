@@ -84,6 +84,8 @@ const RelatorioNotificacoes: React.FC = () => {
 
     const [loading, setLoading] = useState(true);
 
+    const [filtroSel, setFiltroSel] = useState<string | null>(null);
+
     const [chatAberto, setChatAberto] = useState<string | null>(null);
 
 
@@ -610,9 +612,30 @@ const RelatorioNotificacoes: React.FC = () => {
             {gargSel && ocorrenciaSel && (
                 <div className="mb-4">
                     <h5>Detalhes — Ocorrência {ocorrenciaSel} em {gargSel}</h5>
+
+                    {/* Filtro de notificações */}
+                    <div className="mb-3">
+                        <label><strong>Filtrar notificações:</strong></label>
+                        <select
+                            className="form-control"
+                            value={filtroSel || ""}
+                            onChange={(e) => setFiltroSel(e.target.value || null)}
+                        >
+                            <option value="">-- todas --</option>
+                            <option value="semComentarios">Sem comentários</option>
+                            <option value="semJulgamento">Sem julgamento</option>
+                        </select>
+                    </div>
+
+                    {/* Lista filtrada */}
                     <ul className="list-group">
                         {porGarg
                             .filter((n) => n.ocorrencia === ocorrenciaSel)
+                            .filter((n) => {
+                                if (filtroSel === "semComentarios") return n.qtdComentarios === 0;
+                                if (filtroSel === "semJulgamento") return !n.julgamentoStatus;
+                                return true;
+                            })
                             .map((n, idx) => (
                                 <li key={idx} className="list-group-item position-relative">
                                     {/* Ícone do chat */}
@@ -623,7 +646,7 @@ const RelatorioNotificacoes: React.FC = () => {
                                         <FaCommentDots />
                                     </div>
 
-                                    {/* ✅ Status de julgamento com espaçamento */}
+                                    {/* Status de julgamento */}
                                     <div className="position-absolute" style={{ top: "48px", right: "12px" }}>
                                         {n.julgamentoStatus === "Recorrivel" && (
                                             <span className="text-success fw-bold">Recorrível</span>
@@ -663,50 +686,72 @@ const RelatorioNotificacoes: React.FC = () => {
             {gargSel && !ocorrenciaSel && (
                 <div className="mb-4">
                     <h5>Detalhes — Todas ocorrências em {gargSel}</h5>
+
+                    {/* Filtro de notificações */}
+                    <div className="mb-3">
+                        <label><strong>Filtrar notificações:</strong></label>
+                        <select
+                            className="form-control"
+                            value={filtroSel || ""}
+                            onChange={(e) => setFiltroSel(e.target.value || null)}
+                        >
+                            <option value="">-- todas --</option>
+                            <option value="semComentarios">Sem comentários</option>
+                            <option value="semJulgamento">Sem julgamento</option>
+                        </select>
+                    </div>
+
+                    {/* Lista filtrada */}
                     <ul className="list-group">
-                        {porGarg.map((n, idx) => (
-                            <li key={idx} className="list-group-item position-relative">
-                                {/* Ícone do chat */}
-                                <div
-                                    className="position-absolute top-0 end-0 m-2 fs-2 cursor-pointer"
-                                    onClick={() => setChatAberto(n.codigo)}
-                                >
-                                    <FaCommentDots />
-                                </div>
-
-                                {/* ✅ Status de julgamento com espaçamento */}
-                                <div className="position-absolute" style={{ top: "48px", right: "12px" }}>
-                                    {n.julgamentoStatus === "Recorrivel" && (
-                                        <span className="text-success fw-bold">Recorrível</span>
-                                    )}
-                                    {n.julgamentoStatus === "Irrecorrivel" && (
-                                        <span className="text-danger fw-bold">Irrecorrível</span>
-                                    )}
-                                </div>
-
-                                {/* Badge de comentários */}
-                                <div
-                                    className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center"
-                                    onClick={() => setChatAberto(n.codigo)}
-                                >
-                                    <span
-                                        className={`badge ms-1 ${n.qtdComentarios > 0 ? 'bg-danger' : 'bg-secondary'}`}
+                        {porGarg
+                            .filter((n) => {
+                                if (filtroSel === "semComentarios") return n.qtdComentarios === 0;
+                                if (filtroSel === "semJulgamento") return !n.julgamentoStatus;
+                                return true;
+                            })
+                            .map((n, idx) => (
+                                <li key={idx} className="list-group-item position-relative">
+                                    {/* Ícone do chat */}
+                                    <div
+                                        className="position-absolute top-0 end-0 m-2 fs-2 cursor-pointer"
+                                        onClick={() => setChatAberto(n.codigo)}
                                     >
-                                        {n.qtdComentarios}
-                                    </span>
-                                </div>
+                                        <FaCommentDots />
+                                    </div>
 
-                                {/* Dados da notificação */}
-                                <strong>Código:</strong> {n.codigo} <br />
-                                <strong>Data:</strong> {n.data} {n.hora} <br />
-                                <strong>Ocorrência:</strong> {n.ocorrencia} <br />
-                                <strong>Observação:</strong> {n.observacoes}<br />
-                                <strong>Local:</strong> {n.local}<br />
-                                <strong>Carro:</strong> {n.carro}<br />
-                                <strong>Linha:</strong> {n.linha}<br />
-                                <strong>Agente:</strong> {n.agente}<br />
-                            </li>
-                        ))}
+                                    {/* Status de julgamento */}
+                                    <div className="position-absolute" style={{ top: "48px", right: "12px" }}>
+                                        {n.julgamentoStatus === "Recorrivel" && (
+                                            <span className="text-success fw-bold">Recorrível</span>
+                                        )}
+                                        {n.julgamentoStatus === "Irrecorrivel" && (
+                                            <span className="text-danger fw-bold">Irrecorrível</span>
+                                        )}
+                                    </div>
+
+                                    {/* Badge de comentários */}
+                                    <div
+                                        className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center"
+                                        onClick={() => setChatAberto(n.codigo)}
+                                    >
+                                        <span
+                                            className={`badge ms-1 ${n.qtdComentarios > 0 ? 'bg-danger' : 'bg-secondary'}`}
+                                        >
+                                            {n.qtdComentarios}
+                                        </span>
+                                    </div>
+
+                                    {/* Dados da notificação */}
+                                    <strong>Código:</strong> {n.codigo} <br />
+                                    <strong>Data:</strong> {n.data} {n.hora} <br />
+                                    <strong>Ocorrência:</strong> {n.ocorrencia} <br />
+                                    <strong>Observação:</strong> {n.observacoes}<br />
+                                    <strong>Local:</strong> {n.local}<br />
+                                    <strong>Carro:</strong> {n.carro}<br />
+                                    <strong>Linha:</strong> {n.linha}<br />
+                                    <strong>Agente:</strong> {n.agente}<br />
+                                </li>
+                            ))}
                     </ul>
                 </div>
             )}
