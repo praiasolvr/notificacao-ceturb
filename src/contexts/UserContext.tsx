@@ -12,6 +12,7 @@ interface User {
   email: string | null;    // E-mail do usuário
   uid: string | null;      // ID único do usuário (identificador único)
   displayName: string | null; // Nome exibido do usuário (caso tenha configurado no Firebase)
+  setor: string | null;      // Setor do usuário (adicionado conforme a interface Cliente)
 }
 
 // Tipo do contexto de usuário que será acessado por outros componentes
@@ -34,26 +35,28 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
+        let nomeCliente: string | null = null;
+        let setorCliente: string | null = null;
+
         try {
-          // Busca o documento do cliente com base no UID
           const docRef = doc(db, 'clientes', firebaseUser.uid);
           const docSnap = await getDoc(docRef);
 
-          const nomeCliente = docSnap.exists() ? docSnap.data().nome : null;
-
-          setUser({
-            email: firebaseUser.email,
-            uid: firebaseUser.uid,
-            displayName: nomeCliente ?? firebaseUser.displayName ?? firebaseUser.email,
-          });
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            nomeCliente = data.nome ?? null;
+            setorCliente = data.setor ?? null;
+          }
         } catch (error) {
           console.error('Erro ao buscar dados do cliente:', error);
-          setUser({
-            email: firebaseUser.email,
-            uid: firebaseUser.uid,
-            displayName: firebaseUser.displayName ?? firebaseUser.email,
-          });
         }
+
+        setUser({
+          email: firebaseUser.email,
+          uid: firebaseUser.uid,
+          displayName: nomeCliente ?? firebaseUser.displayName ?? firebaseUser.email,
+          setor: setorCliente ?? null,
+        });
       } else {
         setUser(null);
       }

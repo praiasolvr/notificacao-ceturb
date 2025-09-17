@@ -4,6 +4,7 @@ import {
     doc,
     getDoc,
     getDocs,
+    setDoc,
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
@@ -16,12 +17,17 @@ import {
     Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+
+import Swal from 'sweetalert2';
+
 import { FaCommentDots } from "react-icons/fa6";
 
 import { Spinner } from "react-bootstrap";
 
 
 import ChatComentarios from "../../components/ChatComentarios";
+
+import { useUser } from "../../contexts/UserContext";
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -45,6 +51,7 @@ interface Notificacao {
     codigo: string;
     comentarios?: Comentario[]; // <- aqui está a mágica
     qtdComentarios: number;
+    julgamentoStatus?: string | null;
 }
 
 const ordemGarg = [
@@ -58,6 +65,13 @@ const mesesLabel = [
 ];
 
 const RelatorioNotificacoes: React.FC = () => {
+    const { user } = useUser();
+
+    const [julgamento, setJulgamento] = useState<{
+        status: string;
+        respondidoPorUid: string;
+    } | null>(null);
+
     const [notificacoes, setNotificacoes] = useState<Notificacao[]>([]);
     const [gruposNotificacoes, setGruposNotificacoes] = useState<string[]>([]);
     const [anos, setAnos] = useState<string[]>([]);
@@ -73,6 +87,20 @@ const RelatorioNotificacoes: React.FC = () => {
     const [chatAberto, setChatAberto] = useState<string | null>(null);
 
 
+    const podeJulgar = (() => {
+        if (!user || user.setor !== "Juridico") return false;
+        if (!chatAberto) return false;
+
+        const notificacao = notificacoes.find((n) => n.codigo === chatAberto);
+        if (!notificacao || !notificacao.comentarios || notificacao.comentarios.length === 0) return false;
+
+        // Se ainda não há julgamento, qualquer jurídico pode julgar
+        if (!julgamento) return true;
+
+        // Se já há julgamento, só o autor pode alterar
+        return julgamento.respondidoPorUid === user.uid;
+    })();
+
     useEffect(() => {
         carregarDecendios();
     }, []);
@@ -82,6 +110,48 @@ const RelatorioNotificacoes: React.FC = () => {
             carregarTodos();
         }
     }, [gruposNotificacoes]);
+
+    useEffect(() => {
+        const carregarJulgamento = async () => {
+            if (!chatAberto) {
+                setJulgamento(null);
+                return;
+            }
+
+            const notificacao = notificacoes.find((n) => n.codigo === chatAberto);
+            if (!notificacao) return;
+
+            const grupo = getGrupoFromData(notificacao.data);
+            const julgamentoRef = doc(
+                db,
+                "notificacoes",
+                grupo,
+                "notificacoes",
+                chatAberto,
+                "jugamento",
+                "resposta"
+            );
+
+            try {
+                const snap = await getDoc(julgamentoRef);
+                if (snap.exists()) {
+                    const dados = snap.data();
+                    setJulgamento({
+                        status: dados.status,
+                        respondidoPorUid: dados.respondidoPorUid,
+                    });
+                    setStatusSel(dados.status); // atualiza visualmente
+                } else {
+                    setJulgamento(null);
+                    setStatusSel(null);
+                }
+            } catch (err) {
+                console.error("Erro ao carregar julgamento:", err);
+            }
+        };
+
+        carregarJulgamento();
+    }, [chatAberto]);
 
     //     useEffect(() => {
     //     const carregarComentariosParaNotificacoes = async () => {
@@ -98,6 +168,18 @@ const RelatorioNotificacoes: React.FC = () => {
 
     //     carregarComentariosParaNotificacoes();
     // }, [notificacoes]);  // Isso será executado assim que as notificações forem carregadas
+
+
+    async function carregarStatusJulgamento(grupo: string, codigo: string): Promise<string | null> {
+        try {
+            const julgamentoRef = doc(db, "notificacoes", grupo, "notificacoes", codigo, "jugamento", "resposta");
+            const snap = await getDoc(julgamentoRef);
+            return snap.exists() ? snap.data().status ?? null : null;
+        } catch (err) {
+            console.error(`Erro ao buscar julgamento de ${codigo}:`, err);
+            return null;
+        }
+    }
 
     async function carregarComentarios(grupo: string, codigo: string): Promise<Comentario[]> {
 
@@ -146,7 +228,6 @@ const RelatorioNotificacoes: React.FC = () => {
     }
 
     async function carregarTodos() {
-        // console.log("carregarTodos");
         setLoading(true); // 👈 começa carregamento
         const todas: Notificacao[] = [];
         const anosDetectados = new Set<string>();
@@ -224,6 +305,34 @@ const RelatorioNotificacoes: React.FC = () => {
         carregarComentariosDoGarg();
     }, [gargSel]);
 
+    useEffect(() => {
+        async function atualizarStatusDoMes() {
+            if (mesSel === null || !anoSel) return;
+
+            const notificacoesDoMes = notificacoes.filter((n) => {
+                const [dia, mes, ano] = n.data.split("/");
+                return ano === anoSel && parseInt(mes, 10) === mesSel + 1;
+            });
+
+            const atualizadas = await Promise.all(
+                notificacoesDoMes.map(async (n) => {
+                    const grupo = getGrupoFromData(n.data);
+                    const status = await carregarStatusJulgamento(grupo, n.codigo);
+                    return { ...n, julgamentoStatus: status };
+                })
+            );
+
+            setNotificacoes((prev) =>
+                prev.map((n) => {
+                    const atualizada = atualizadas.find((a) => a.codigo === n.codigo);
+                    return atualizada ? atualizada : n;
+                })
+            );
+        }
+
+        atualizarStatusDoMes();
+    }, [mesSel, anoSel]);
+
     const porAno = anoSel
         ? notificacoes.filter((n) => n.data.split("/")[2] === anoSel)
         : [];
@@ -298,10 +407,89 @@ const RelatorioNotificacoes: React.FC = () => {
     };
 
 
-    const handleSave = () => {
-        // aqui você envia statusSel para o servidor/Firestore/etc
-        console.log("Status salvo:", statusSel ?? "Em Análise");
-        alert(`Status salvo: ${statusSel ?? "Em Análise"}`);
+    const handleSave = async () => {
+        const status = statusSel ?? "Em Análise";
+
+        if (!chatAberto) {
+            Swal.fire({
+                title: 'Ops!',
+                text: 'Nenhuma notificação selecionada.',
+                icon: 'warning',
+            });
+            return;
+        }
+
+        const notificacao = notificacoes.find((n) => n.codigo === chatAberto);
+        if (!notificacao) {
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Notificação não encontrada.',
+                icon: 'error',
+            });
+            return;
+        }
+
+        if (!notificacao.comentarios || notificacao.comentarios.length === 0) {
+            Swal.fire({
+                title: 'Atenção!',
+                text: 'Não é possível julgar sem justificativas.',
+                icon: 'info',
+            });
+            return;
+        }
+
+        if (!user || !user.uid) {
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Usuário não autenticado.',
+                icon: 'error',
+            });
+            return;
+        }
+
+        const grupo = getGrupoFromData(notificacao.data);
+
+        const julgamentoRef = doc(
+            db,
+            "notificacoes",
+            grupo,
+            "notificacoes",
+            chatAberto,
+            "jugamento",
+            "resposta"
+        );
+
+        try {
+            await setDoc(julgamentoRef, {
+                status,
+                atualizadoEm: new Date().toISOString(),
+                respondidoPorUid: user.uid,
+            });
+
+            setNotificacoes((prev) =>
+                prev.map((n) =>
+                    n.codigo === chatAberto
+                        ? { ...n, julgamentoStatus: status }
+                        : n
+                )
+            );
+
+            Swal.fire({
+                title: 'Status atualizado!',
+                text: `A notificação foi marcada como "${status}".`,
+                icon: 'success',
+                confirmButtonText: 'Fechar',
+                timer: 2500,
+                timerProgressBar: true,
+            });
+        } catch (error) {
+            console.error("Erro ao salvar julgamento:", error);
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Erro ao salvar julgamento. Verifique o console.',
+                icon: 'error',
+            });
+        }
     };
 
     const toggleStatus = (status: string) => {
@@ -417,6 +605,8 @@ const RelatorioNotificacoes: React.FC = () => {
                     </div>
                 </div>
             )}
+
+
             {gargSel && ocorrenciaSel && (
                 <div className="mb-4">
                     <h5>Detalhes — Ocorrência {ocorrenciaSel} em {gargSel}</h5>
@@ -424,24 +614,38 @@ const RelatorioNotificacoes: React.FC = () => {
                         {porGarg
                             .filter((n) => n.ocorrencia === ocorrenciaSel)
                             .map((n, idx) => (
-                                <li key={idx} className="list-group-item">
+                                <li key={idx} className="list-group-item position-relative">
+                                    {/* Ícone do chat */}
                                     <div
                                         className="position-absolute top-0 end-0 m-2 fs-2 cursor-pointer"
                                         onClick={() => setChatAberto(n.codigo)}
                                     >
                                         <FaCommentDots />
                                     </div>
-                                    <div>
+
+                                    {/* ✅ Status de julgamento com espaçamento */}
+                                    <div className="position-absolute" style={{ top: "48px", right: "12px" }}>
+                                        {n.julgamentoStatus === "Recorrivel" && (
+                                            <span className="text-success fw-bold">Recorrível</span>
+                                        )}
+                                        {n.julgamentoStatus === "Irrecorrivel" && (
+                                            <span className="text-danger fw-bold">Irrecorrível</span>
+                                        )}
                                     </div>
-                                    <div className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center"
+
+                                    {/* Badge de comentários */}
+                                    <div
+                                        className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center"
                                         onClick={() => setChatAberto(n.codigo)}
                                     >
                                         <span
-                                            className={`badge ms-1 ${n.comentarios && n.comentarios.length > 0 ? 'bg-danger' : 'bg-secondary'}`}
+                                            className={`badge ms-1 ${n.qtdComentarios > 0 ? 'bg-danger' : 'bg-secondary'}`}
                                         >
-                                            {n.comentarios?.length || 0}
+                                            {n.qtdComentarios}
                                         </span>
                                     </div>
+
+                                    {/* Dados da notificação */}
                                     <strong>Código:</strong> {n.codigo} <br />
                                     <strong>Data:</strong> {n.data} {n.hora} <br />
                                     <strong>Ocorrência:</strong> {n.ocorrencia} <br />
@@ -450,7 +654,6 @@ const RelatorioNotificacoes: React.FC = () => {
                                     <strong>Carro:</strong> {n.carro}<br />
                                     <strong>Linha:</strong> {n.linha}<br />
                                     <strong>Agente:</strong> {n.agente}<br />
-
                                 </li>
                             ))}
                     </ul>
@@ -462,24 +665,39 @@ const RelatorioNotificacoes: React.FC = () => {
                     <h5>Detalhes — Todas ocorrências em {gargSel}</h5>
                     <ul className="list-group">
                         {porGarg.map((n, idx) => (
-                            <li key={idx} className="list-group-item">
+                            <li key={idx} className="list-group-item position-relative">
+                                {/* Ícone do chat */}
                                 <div
-                                    className="position-absolute top-1 end-0 me-3 m-1 fs-1 cursor-pointer"
+                                    className="position-absolute top-0 end-0 m-2 fs-2 cursor-pointer"
                                     onClick={() => setChatAberto(n.codigo)}
                                 >
                                     <FaCommentDots />
                                 </div>
+
+                                {/* ✅ Status de julgamento com espaçamento */}
+                                <div className="position-absolute" style={{ top: "48px", right: "12px" }}>
+                                    {n.julgamentoStatus === "Recorrivel" && (
+                                        <span className="text-success fw-bold">Recorrível</span>
+                                    )}
+                                    {n.julgamentoStatus === "Irrecorrivel" && (
+                                        <span className="text-danger fw-bold">Irrecorrível</span>
+                                    )}
+                                </div>
+
+                                {/* Badge de comentários */}
                                 <div
                                     className="position-absolute top-0 end-0 m-2 fs-5 cursor-pointer d-flex align-items-center"
                                     onClick={() => setChatAberto(n.codigo)}
                                 >
                                     <span
-                                        className={`badge ms-1 ${n.comentarios && n.comentarios.length > 0 ? 'bg-danger' : 'bg-secondary'}`}
+                                        className={`badge ms-1 ${n.qtdComentarios > 0 ? 'bg-danger' : 'bg-secondary'}`}
                                     >
-                                        {n.comentarios?.length || 0}
+                                        {n.qtdComentarios}
                                     </span>
                                 </div>
-                                <strong>Codigo:</strong> {n.codigo} <br />
+
+                                {/* Dados da notificação */}
+                                <strong>Código:</strong> {n.codigo} <br />
                                 <strong>Data:</strong> {n.data} {n.hora} <br />
                                 <strong>Ocorrência:</strong> {n.ocorrencia} <br />
                                 <strong>Observação:</strong> {n.observacoes}<br />
@@ -487,10 +705,6 @@ const RelatorioNotificacoes: React.FC = () => {
                                 <strong>Carro:</strong> {n.carro}<br />
                                 <strong>Linha:</strong> {n.linha}<br />
                                 <strong>Agente:</strong> {n.agente}<br />
-
-
-
-
                             </li>
                         ))}
                     </ul>
@@ -518,10 +732,11 @@ const RelatorioNotificacoes: React.FC = () => {
                                     <div className="form-check form-check-inline">
                                         <input
                                             className="form-check-input"
-                                            type="checkbox" // mudou para checkbox
+                                            type="checkbox"
                                             id="recorrivel"
                                             checked={statusSel === "Recorrivel"}
                                             onChange={() => toggleStatus("Recorrivel")}
+                                            disabled={!podeJulgar}
                                         />
                                         <label className="form-check-label" htmlFor="recorrivel">
                                             Recorrível
@@ -532,10 +747,11 @@ const RelatorioNotificacoes: React.FC = () => {
                                     <div className="form-check form-check-inline">
                                         <input
                                             className="form-check-input"
-                                            type="checkbox" // mudou para checkbox
+                                            type="checkbox"
                                             id="irrecorrivel"
                                             checked={statusSel === "Irrecorrivel"}
                                             onChange={() => toggleStatus("Irrecorrivel")}
+                                            disabled={!podeJulgar}
                                         />
                                         <label className="form-check-label" htmlFor="irrecorrivel">
                                             Irrecorrível
@@ -546,6 +762,7 @@ const RelatorioNotificacoes: React.FC = () => {
                                         type="button"
                                         className="btn btn-primary btn-sm"
                                         onClick={handleSave}
+                                        disabled={!podeJulgar}
                                     >
                                         Salvar
                                     </button>

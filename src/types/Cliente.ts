@@ -17,6 +17,6 @@ export interface Contato {
     nome: string;
     contatos: Contato[];
     endereco?: Endereco; // Use `endereco?` se ele puder ser opcional
-    setor: string;
+    setor: string | null; // ✅ Adiciona aqui
     funcao: string;
   }
