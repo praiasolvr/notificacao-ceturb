@@ -24,6 +24,8 @@ import Dashboard from './pages/client/Dashboard';
 import ImportarNotificacoes from './pages/admin/ImportarNotificacoes';
 import RelatorioSolicitacoes from './pages/admin/RelatorioSolicitacoes';
 import RelatorioNotificacoes from './pages/admin/RelatorioNotificacoes';
+import InformacoesNotificacoes from './pages/admin/InformacoesNotificacoes';
+
 
 function App() {
   return (
@@ -56,6 +58,7 @@ function App() {
             <Route path="/importar-notificacoes" element={<ImportarNotificacoes />} />
             <Route path="/relatorio-solicitacoes" element={<RelatorioSolicitacoes />} />
             <Route path="/relatorio-notificacoes" element={<RelatorioNotificacoes />} />
+            <Route path="/informacoes-notificacoes" element={<InformacoesNotificacoes />} />
           </Route>
 
         </Routes>

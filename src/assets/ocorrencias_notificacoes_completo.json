@@ -1,0 +1,942 @@
+[
+    {
+        "codigo": 1,
+        "valor": 50,
+        "descricao": "Art. 15 - Inc. VII - Decreto 2751 - N/89 - Operar veículo com catraca em mau estado de conservação"
+    },
+    {
+        "codigo": 2,
+        "valor": 50,
+        "descricao": "Art. 15 - Inc. VII - Decreto 2751 - N/89 - Operar veículo com lacre violado"
+    },
+    {
+        "codigo": 3,
+        "valor": 30,
+        "descricao": "Art. 30 - Decreto 2751 - N/89 - Manter no veículo extintor de incêndio com controle de revisão vencido ou sem o mesmo"
+    },
+    {
+        "codigo": 4,
+        "valor": 30,
+        "descricao": "Art. 30 - Decreto 2751 - N/89 - Manter no veículo extintor de incêndio com defeito (Manômetro emperrado)"
+    },
+    {
+        "codigo": 5,
+        "valor": 30,
+        "descricao": "Art. 30 - Decreto 2751 - N/89 - Manter no veículo extintor de incêndio sem trava de segurança"
+    },
+    {
+        "codigo": 6,
+        "valor": 30,
+        "descricao": "Art. 30 - Decreto 2751 - N/89 - Manter no veículo extintor de incêndio descarregado"
+    },
+    {
+        "codigo": 7,
+        "valor": 50,
+        "descricao": "Art. 15 Inc. V - Art. 37 - Decreto 2751 - N/89 - Utilizar pneus em condições inadequadas"
+    },
+    {
+        "codigo": 8,
+        "valor": 10,
+        "descricao": "Art. 16 - § 2 - Decreto 2751 - N/89 - Operar veículo sem o quadro de identificação da tripulação e tarifa"
+    },
+    {
+        "codigo": 9,
+        "valor": 10,
+        "descricao": "Art. 16 - § 2 e Art. 32 - Decreto 2751 - N/89 - Falta de legendas obrigatórias determinadas pela Ceturb-GV (Quadro Tarifário)"
+    },
+    {
+        "codigo": 10,
+        "valor": 10,
+        "descricao": "Art. 16 - § 2 e Art. 32 - Decreto 2751 - N/89 - Falta de legendas obrigatórias determinadas pela Ceturb-GV (Lei Nº 4.017/87 - Troco)"
+    },
+    {
+        "codigo": 11,
+        "valor": 10,
+        "descricao": "Art. 16 - § 2 e Art. 32 - Decreto 2751 - N/89 - Outras legendas obrigatórias"
+    },
+    {
+        "codigo": 12,
+        "valor": 10,
+        "descricao": "Art. 16 - § 2 e Art. 32 - Decreto 2751 - N/89 - Veículo operando sem aparelho ou dispositivo que permite a indicação de passagem"
+    },
+    {
+        "codigo": 13,
+        "valor": 50,
+        "descricao": "Art. 19 - Decreto 2751 - N/89 - Lotação excedente de passageiros"
+    },
+    {
+        "codigo": 14,
+        "valor": 50,
+        "descricao": "Art. 19 - Decreto 2751 - N/89 - Violar o direito de preferência do idoso, deficiente, lactante, gestante ou obesos"
+    },
+    {
+        "codigo": 15,
+        "valor": 50,
+        "descricao": "Art. 19 - Decreto 2751 - N/89 - Permitir, deixar ou manter pessoas em local não apropriado para passageiros"
+    },
+    {
+        "codigo": 16,
+        "valor": 50,
+        "descricao": "Art. 19 - Decreto 2751 - N/89 - Transpor passageiros pela porta dianteira quando fechada ou proibida"
+    },
+    {
+        "codigo": 17,
+        "valor": 50,
+        "descricao": "Art. 19 - Decreto 2751 - N/89 - Passageiros transportados em pé em veículo de lotação, onde não há condições regulamentares de segurança"
+    },
+    {
+        "codigo": 18,
+        "valor": 30,
+        "descricao": "Art. 20 - Decreto 2751 - N/89 - Piso com buracos, inclinações ou deformações que coloquem em risco o passageiro"
+    },
+    {
+        "codigo": 19,
+        "valor": 30,
+        "descricao": "Art. 20 - Decreto 2751 - N/89 - Degraus do veículo sem corrimão ou com corrimão danificado"
+    },
+    {
+        "codigo": 20,
+        "valor": 30,
+        "descricao": "Art. 20 - Decreto 2751 - N/89 - Porta com dobradiças danificadas ou operando com ruídos excessivos ou folgas"
+    },
+    {
+        "codigo": 21,
+        "valor": 30,
+        "descricao": "Art. 20 - Decreto 2751 - N/89 - Pintura descascada ou ferrugem visível que comprometa a estrutura do veículo"
+    },
+    {
+        "codigo": 22,
+        "valor": 30,
+        "descricao": "Art. 20 - Decreto 2751 - N/89 - Iluminação interna deficiente, lâmpadas queimadas ou sem cobertura"
+    },
+    {
+        "codigo": 23,
+        "valor": 30,
+        "descricao": "Art. 21 - Decreto 2751 - N/89 - Vidros trincados ou com visibilidade comprometida"
+    },
+    {
+        "codigo": 24,
+        "valor": 30,
+        "descricao": "Art. 21 - Decreto 2751 - N/89 - Para-brisa com rachaduras que impeçam visibilidade"
+    },
+    {
+        "codigo": 25,
+        "valor": 30,
+        "descricao": "Art. 22 - Decreto 2751 - N/89 - Banco de passageiros danificado ou sem estofamento"
+    },
+    {
+        "codigo": 26,
+        "valor": 10,
+        "descricao": "Art.15 - Inc. VIII - Decreto 2751 - N/89 - Operar veículo sem limpeza adequada (Interna)"
+    },
+    {
+        "codigo": 27,
+        "valor": 10,
+        "descricao": "Art. 15 Inc. VIII - Decreto 2751 - N/89 - Operar veículo sem limpeza adequada (Externa)"
+    },
+    {
+        "codigo": 28,
+        "valor": 10,
+        "descricao": "Art. 15 Inc. VIII - Decreto 2751 - N/89 - Apresentar veículo para início de operação sem limpeza externa adequada"
+    },
+    {
+        "codigo": 29,
+        "valor": 10,
+        "descricao": "Art. 15 - Inc. VIII - Decreto 2751 - N/89 - Apresentar veículo para início de operação sem limpeza interna adequada"
+    },
+    {
+        "codigo": 30,
+        "valor": 20,
+        "descricao": "Art. 38 - § 1 - Decreto 2751 - N/89 - Falta de equipamento obrigatório (Suporte de placa de Cod. de Linha)"
+    },
+    {
+        "codigo": 31,
+        "valor": 20,
+        "descricao": "Art. 38 - § 1 - Decreto 2751 - N/89 - Equipamento obrigatório com defeito (sem seta)"
+    },
+    {
+        "codigo": 32,
+        "valor": 20,
+        "descricao": "Art. 38 - § 1 - Decreto 2751 - N/89 - Placa de itinerário diferente da bandeira"
+    },
+    {
+        "codigo": 33,
+        "valor": 20,
+        "descricao": "Art. 38 - § 1 - Decreto 2751 - N/89 - Equipamento obrigatório com defeito (Bandeira)"
+    },
+    {
+        "codigo": 34,
+        "valor": 10,
+        "descricao": "Art. 38 - § 1 - Decreto 2751 - N/89 - Descumprimento da entrada obrigatória na baia da passarela da UFES"
+    },
+    {
+        "codigo": 35,
+        "valor": 10,
+        "descricao": "Art. 38 - § 1 - Decreto 2751 - N/89 - Descumprimento da entrada obrigatória na baia do Aeroporto"
+    },
+    {
+        "codigo": 36,
+        "valor": 10,
+        "descricao": "Art. 6 - Decreto 2751 - N/89 - Permitir embarque em pontos de parada com o veículo afastado do meio-fio sem motivo de força maior"
+    },
+    {
+        "codigo": 37,
+        "valor": 10,
+        "descricao": "Art. 6 - Decreto 2751 - N/89 - Permitir desembarque em pontos de parada com o veículo afastado do meio-fio sem motivo de força maior"
+    },
+    {
+        "codigo": 38,
+        "valor": 10,
+        "descricao": "Art. 6 - Decreto 2751 - N/89 - Permitir embarque fora do ponto de parada autorizado"
+    },
+    {
+        "codigo": 39,
+        "valor": 10,
+        "descricao": "Art. 6 - Decreto 2751 - N/89 - Permitir desembarque fora do ponto autorizado de parada"
+    },
+    {
+        "codigo": 40,
+        "valor": 10,
+        "descricao": "Art. 22 Inc. II - Decreto 2751 - N/89 - Recusa ao embarque em ponto autorizado de parada"
+    },
+    {
+        "codigo": 41,
+        "valor": 10,
+        "descricao": "Art. 22 Inc. II - Decreto 2751 - N/89 - Recusa ao desembarque em ponto autorizado de parada"
+    },
+    {
+        "codigo": 42,
+        "valor": 10,
+        "descricao": "Art. 7 - Decreto 2751 - N/89 - Recusa ao embarque conforme previsto na lei 3.628/84"
+    },
+    {
+        "codigo": 43,
+        "valor": 10,
+        "descricao": "Art. 7 - Decreto 2751 - N/89 - Recusa ao embarque conforme previsto na lei 3.971/87"
+    },
+    {
+        "codigo": 44,
+        "valor": 10,
+        "descricao": "Art. 7 - Decreto 2751 - N/89 - Recusa ao embarque conforme previsto na lei 3.934/87"
+    },
+    {
+        "codigo": 45,
+        "valor": 10,
+        "descricao": "Art. 7 - Decreto 2751 - N/89 - Permitir o transporte de passageiros gratuitamente não amparados por lei"
+    },
+    {
+        "codigo": 46,
+        "valor": 10,
+        "descricao": "Art. 8 - Decreto 2751 - N/89 - Trafegar com portas abertas transportando passageiros"
+    },
+    {
+        "codigo": 47,
+        "valor": 5,
+        "descricao": "Art. 21 § 3 - Decreto 2751 - N/89 - Permitir a permanência de objetos no interior do veículo dificultando a circulação dos usuários"
+    },
+    {
+        "codigo": 48,
+        "valor": 10,
+        "descricao": "Art. 10 § Único - Decreto 2751 - N/89 - Estacionar veículo fora dos pontos determinados pela CETURB-GV sem motivo justificado"
+    },
+    {
+        "codigo": 49,
+        "valor": 30,
+        "descricao": "Art. 10 - Decreto 2751 - N/89 - Estacionar veículo superior ao permitido no Terminal, prejudicando a operação do sistema"
+    },
+    {
+        "codigo": 50,
+        "valor": 50,
+        "descricao": "Art. 15 Inc. XIV - Decreto 2751 - N/89 - Trafegar à noite sem iluminação interna do veículo"
+    },
+    {
+        "codigo": 51,
+        "valor": 50,
+        "descricao": "Art. 15 Inc. XIV - Decreto 2751 - N/89 - Trafegar à noite sem iluminação externa do veículo"
+    },
+    {
+        "codigo": 52,
+        "valor": 10,
+        "descricao": "Art. 22 Inc. I - Decreto 2751 - N/89 - Dirigir o veículo com imprudência (Excesso de velocidade)"
+    },
+    {
+        "codigo": 53,
+        "valor": 10,
+        "descricao": "Art. 22 Inc. I - Decreto 2751 - N/89 - Dirigir o veículo com imprudência (Freadas bruscas)"
+    },
+    {
+        "codigo": 54,
+        "valor": 10,
+        "descricao": "Art. 22 Inc. I - Decreto 2751 - N/89 - Dirigir o veículo com imprudência (Ultrapassagens forçadas)"
+    },
+    {
+        "codigo": 55,
+        "valor": 10,
+        "descricao": "Art. 22 Inc. I - Decreto 2751 - N/89 - Desrespeitar a sinalização de trânsito"
+    },
+    {
+        "codigo": 56,
+        "valor": 10,
+        "descricao": "Art. 15 Inc. I - Decreto 2751 - N/89 - Descumprimento da OSO (Bandeira diferente da especificada)"
+    },
+    {
+        "codigo": 57,
+        "valor": 50,
+        "descricao": "Art. 15 Inc. I e III - Decreto 2751 - N/89 - Descumprimento da OSO (Alterar itinerário sem justificativa)"
+    },
+    {
+        "codigo": 58,
+        "valor": 70,
+        "descricao": "Art. 15 - Decreto 2751 - N/89 - Deixar de cumprir determinação contida em aviso, comunicado, carta, ofício, edital ou ordem da Ceturb-GV"
+    },
+    {
+        "codigo": 59,
+        "valor": 5,
+        "descricao": "Art. 22 Inc. VI - Decreto 2751 - N/89 - Abandonar o veículo em qualquer local sem causa justificada - Motorista"
+    },
+    {
+        "codigo": 60,
+        "valor": 5,
+        "descricao": "Art. 23 Inc. VII - Decreto 2751 - N/89 - Abandonar o veículo em qualquer local sem causa justificada - Cobrador"
+    },
+    {
+        "codigo": 61,
+        "valor": 5,
+        "descricao": "Art. 9 - Decreto 2751 - N/89 - Transitar com o veículo fora da faixa exclusiva"
+    },
+    {
+        "codigo": 62,
+        "valor": 30,
+        "descricao": "Art. 38 Parágrafo Único - Decreto 2751 - N/89 - Saindo do ponto final virando a bandeira com passageiros dentro"
+    },
+    {
+        "codigo": 63,
+        "valor": 50,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Não cumprir o que determina a NC002/95"
+    },
+    {
+        "codigo": 64,
+        "valor": 50,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Operar veículo em mau estado de conservação"
+    },
+    {
+        "codigo": 65,
+        "valor": 10,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Falta de legenda obrigatória determinada pela Ceturb-GV (Lei Nº 3.628/83 - Gestante/Idoso/Deficiente)"
+    },
+    {
+        "codigo": 66,
+        "valor": 10,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Cobrador recebendo meia-passagem e permitindo que o passageiro saísse pela porta dianteira"
+    },
+    {
+        "codigo": 67,
+        "valor": 10,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Cobrador puxando a catraca em direção ao seu assento deixando espaço para passagem e cobrando meia-passagem"
+    },
+    {
+        "codigo": 68,
+        "valor": 10,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Cobrador permitindo que usuário pulasse a roleta mediante redução da tarifa"
+    },
+    {
+        "codigo": 69,
+        "valor": 10,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Passagem sendo cobrada sem rodar a roleta; passageiros desembarcando pela porta dianteira"
+    },
+    {
+        "codigo": 70,
+        "valor": 10,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Cobrador não cumpriu o Artigo 3º da Lei 3939 de 18.06.87 que institui o Passe Escolar"
+    },
+    {
+        "codigo": 71,
+        "valor": 30,
+        "descricao": "Art. 16 Parágrafo Único 1º - Decreto 2751 - N/89 - Recusa na aceitação de passes comuns"
+    },
+    {
+        "codigo": 72,
+        "valor": 30,
+        "descricao": "Art. 16 Parágrafo Único 1º - Decreto 2751 - N/89 - Recusa na aceitação de passes escolares conforme previsto em lei"
+    },
+    {
+        "codigo": 73,
+        "valor": 30,
+        "descricao": "Art. 16 Parágrafo Único 1º - Decreto 2751 - N/89 - Recusa na aceitação de vales transportes conforme previsto em lei"
+    },
+    {
+        "codigo": 74,
+        "valor": 30,
+        "descricao": "Art. 15 Inc. III - Decreto 2751 - N/89 - Não cumprimento do disposto na Lei 4.107/87"
+    },
+    {
+        "codigo": 75,
+        "valor": 50,
+        "descricao": "Art. 16 - Decreto 2751 - N/89 - Cobrar tarifa diferente da especificada pelo órgão competente"
+    },
+    {
+        "codigo": 76,
+        "valor": 10,
+        "descricao": "Art. 16 Parágrafo Único 2º - Decreto 2751 - N/89 - Manter a tabela de tarifa rasurada"
+    },
+    {
+        "codigo": 77,
+        "valor": 10,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Sair do terminal de integração sem autorização do fiscal"
+    },
+    {
+        "codigo": 78,
+        "valor": 50,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Catraca violada"
+    },
+    {
+        "codigo": 79,
+        "valor": 10,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Negligência do cobrador interferindo no horário autorizado (Atraso)"
+    },
+    {
+        "codigo": 80,
+        "valor": 10,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Atraso no horário de saída do veículo"
+    },
+    {
+        "codigo": 81,
+        "valor": 30,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Emissão de fumaça negra acima do padrão permitido"
+    },
+    {
+        "codigo": 82,
+        "valor": 10,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Falta de cobrador"
+    },
+    {
+        "codigo": 83,
+        "valor": 30,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Veículo com defeito na roleta (Frouxa)"
+    },
+    {
+        "codigo": 84,
+        "valor": 50,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Operar veículo sem lacre"
+    },
+    {
+        "codigo": 85,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. II - Decreto 2751 - N/89 - Motorista não portando o cartão de identificação em local determinado"
+    },
+    {
+        "codigo": 86,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. II - Decreto 2751 - N/89 - Cobrador não portando o cartão de identificação em local determinado"
+    },
+    {
+        "codigo": 87,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. II - Decreto 2751 - N/89 - Fiscal não portando o cartão de identificação em local determinado"
+    },
+    {
+        "codigo": 88,
+        "valor": 10,
+        "descricao": "Art. 22 Inc. VIII - Decreto 2751 - N/89 - Recusar a exibição de documentos exigidos em legislação ou normas vigentes - Motorista"
+    },
+    {
+        "codigo": 89,
+        "valor": 10,
+        "descricao": "Art. 22 Inc. IX - Decreto 2751 - N/89 - Recusar a exibição de documentos exigidos em legislação ou normas vigentes - Cobrador"
+    },
+    {
+        "codigo": 90,
+        "valor": 10,
+        "descricao": "Art. 22 Inc. IX - Decreto 2751 - N/89 - Recusar a entregar documentos à fiscalização mediante recibo - Motorista"
+    },
+    {
+        "codigo": 91,
+        "valor": 10,
+        "descricao": "Art. 23 Inc. X - Decreto 2751 - N/89 - Recusar a entregar documentos à fiscalização mediante recibo - Cobrador"
+    },
+    {
+        "codigo": 92,
+        "valor": 10,
+        "descricao": "Art. 7 Parágrafo Único 1 - Decreto 2751 - N/89 - Recusa ao acesso do fiscal da CETURB-GV pela porta não convencional devidamente credenciado"
+    },
+    {
+        "codigo": 93,
+        "valor": 10,
+        "descricao": "Art. 7 Parágrafo Único 2 - Decreto 2751 - N/89 - Recusa ao embarque do fiscal da CETURB-GV quando devidamente identificado e em serviço pela porta convencional"
+    },
+    {
+        "codigo": 94,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. I - Decreto 2751 - N/89 - Não se apresentar corretamente uniformizado conforme determinação da CETURB-GV - Motorista"
+    },
+    {
+        "codigo": 95,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. I - Decreto 2751 - N/89 - Não se apresentar corretamente uniformizado conforme determinação da CETURB-GV - Cobrador"
+    },
+    {
+        "codigo": 96,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. I - Decreto 2751 - N/89 - Não se apresentar corretamente uniformizado conforme determinação da CETURB-GV - Fiscal"
+    },
+    {
+        "codigo": 97,
+        "valor": 50,
+        "descricao": "Art. 21 Inc. VII - Decreto 2751 - N/89 - Motorista ingerir bebida alcoólica quando em serviço ou antes de assumi-lo"
+    },
+    {
+        "codigo": 98,
+        "valor": 50,
+        "descricao": "Art. 21 Inc. VII - Decreto 2751 - N/89 - Cobrador ingerir bebida alcoólica quando em serviço ou antes de assumi-lo"
+    },
+    {
+        "codigo": 99,
+        "valor": 50,
+        "descricao": "Art. 21 Inc. VII - Decreto 2751 - N/89 - Fiscal ingerir bebida alcoólica quando em serviço ou antes de assumi-lo"
+    },
+    {
+        "codigo": 100,
+        "valor": 5,
+        "descricao": "Art. 22 Inc. IV - Decreto 2751 - N/89 - Fumar em serviço - Motorista"
+    },
+    {
+        "codigo": 101,
+        "valor": 5,
+        "descricao": "Art. 23 Inc. IV - Decreto 2751 - N/89 - Fumar em serviço - Cobrador"
+    },
+    {
+        "codigo": 102,
+        "valor": 10,
+        "descricao": "Art. 21 Inc. IV - Decreto 2751 - N/89 - Portar arma de qualquer natureza quando em serviço - Motorista"
+    },
+    {
+        "codigo": 103,
+        "valor": 10,
+        "descricao": "Art. 21 Inc. IV - Decreto 2751 - N/89 - Portar arma de qualquer natureza quando em serviço - Cobrador"
+    },
+    {
+        "codigo": 104,
+        "valor": 10,
+        "descricao": "Art. 21 Inc. IV - Decreto 2751 - N/89 - Portar arma de qualquer natureza quando em serviço - Fiscal"
+    },
+    {
+        "codigo": 105,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. IX - Decreto 2751 - N/89 - Incontinência pública - Motorista"
+    },
+    {
+        "codigo": 106,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. IX - Decreto 2751 - N/89 - Incontinência pública - Cobrador"
+    },
+    {
+        "codigo": 107,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. IX - Decreto 2751 - N/89 - Incontinência pública - Fiscal"
+    },
+    {
+        "codigo": 108,
+        "valor": 5,
+        "descricao": "Art. 22 Inc. III - Decreto 2751 - N/89 - Recusar-se a dar informações ao usuário referente ao serviço - Motorista"
+    },
+    {
+        "codigo": 109,
+        "valor": 5,
+        "descricao": "Art. 23 Inc. VI - Decreto 2751 - N/89 - Recusar-se a dar informações ao usuário referentes ao serviço - Cobrador"
+    },
+    {
+        "codigo": 110,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. VI - Decreto 2751 - N/89 - Recusar-se a dar informações ao usuário referentes ao serviço - Fiscal"
+    },
+    {
+        "codigo": 111,
+        "valor": 5,
+        "descricao": "Art. 22 Inc. VI - Decreto 2751 - N/89 - Abandonar o veículo quando recebendo passageiros - Motorista"
+    },
+    {
+        "codigo": 112,
+        "valor": 5,
+        "descricao": "Art. 23 Inc. VII - Decreto 2751 - N/89 - Abandonar o veículo quando recebendo passageiros - Cobrador"
+    },
+    {
+        "codigo": 113,
+        "valor": 5,
+        "descricao": "Art. 21 Parágrafo Único 1 - Decreto 2751 - N/89 - Permitir o embarque de passageiros nas condições prevista no parágrafo único do Artigo 4 do regulamento"
+    },
+    {
+        "codigo": 114,
+        "valor": 30,
+        "descricao": "Art. 21 Parágrafo Único 3 - Decreto 2751 - N/89 - Permitir o transporte de substâncias inflamáveis"
+    },
+    {
+        "codigo": 115,
+        "valor": 30,
+        "descricao": "Art. 21 Parágrafo Único 3 - Decreto 2751 - N/89 - Permitir o transporte de substâncias radioativas"
+    },
+    {
+        "codigo": 116,
+        "valor": 30,
+        "descricao": "Art. 21 Parágrafo Único 3 - Decreto 2751 - N/89 - Permitir o transporte de substâncias explosivas"
+    },
+    {
+        "codigo": 117,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. III - Decreto 2751 - N/89 - Tratar os passageiros com falta de urbanidade - Motorista"
+    },
+    {
+        "codigo": 118,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. II - Decreto 2751 - N/89 - Tratar os passageiros com falta de urbanidade - Cobrador"
+    },
+    {
+        "codigo": 119,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. III - Decreto 2751 - N/89 - Tratar os passageiros com falta de urbanidade - Fiscal"
+    },
+    {
+        "codigo": 120,
+        "valor": 5,
+        "descricao": "Art. 21 Inc. VIII - Decreto 2751 - N/89 - Auxiliar de transporte sentado ocupando lugar de passageiro no veículo"
+    },
+    {
+        "codigo": 121,
+        "valor": 5,
+        "descricao": "Art. 21 Parágrafo Único 2 - Decreto 2751 - N/89 - Permitir a atividade de vendedores ambulantes no interior do veículo"
+    },
+    {
+        "codigo": 122,
+        "valor": 10,
+        "descricao": "Art. 15 Inc. IV - Decreto 2751 - N/89 - Dificultar a ação da fiscalização da CETURB-GV - Motorista"
+    },
+    {
+        "codigo": 123,
+        "valor": 10,
+        "descricao": "Art. 15 Inc. IV - Decreto 2751 - N/89 - Dificultar a ação da fiscalização da CETURB-GV - Cobrador"
+    },
+    {
+        "codigo": 124,
+        "valor": 10,
+        "descricao": "Art. 15 Inc. IV - Decreto 2751 - N/89 - Dificultar a ação da fiscalização da CETURB-GV - Fiscal"
+    },
+    {
+        "codigo": 125,
+        "valor": 10,
+        "descricao": "Art. 15 Inc. IV - Decreto 2751 - N/89 - Desacatar a fiscalização da CETURB-GV - Motorista"
+    },
+    {
+        "codigo": 126,
+        "valor": 10,
+        "descricao": "Art. 15 Inc. IV - Decreto 2751 - N/89 - Desacatar a fiscalização da CETURB-GV - Cobrador"
+    },
+    {
+        "codigo": 127,
+        "valor": 10,
+        "descricao": "Art. 15 Inc. IV - Decreto 2751 - N/89 - Desacatar a fiscalização da CETURB-GV - Fiscal"
+    },
+    {
+        "codigo": 128,
+        "valor": 10,
+        "descricao": "Art. 33 - Decreto 2751 - N/89 - Falta no interior do veículo dos documentos previstos no CNT e RCNT"
+    },
+    {
+        "codigo": 129,
+        "valor": 50,
+        "descricao": "Art. 35 - Decreto 2751 - N/89 - Abastecer o veículo fora da garagem"
+    },
+    {
+        "codigo": 130,
+        "valor": 50,
+        "descricao": "Art. 35 - Decreto 2751 - N/89 - Efetuar manutenção do veículo fora da garagem"
+    },
+    {
+        "codigo": 131,
+        "valor": 50,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Cobrar tarifa diferente sem autorização do órgão competente"
+    },
+    {
+        "codigo": 132,
+        "valor": 50,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - BCDs de uma operadora sendo utilizados para o preenchimento de dados de outra operadora"
+    },
+    {
+        "codigo": 133,
+        "valor": 10,
+        "descricao": "Art. 15 Inc. V - Decreto 2751 - N/89 - Operar veículo faltando vidro em janela"
+    },
+    {
+        "codigo": 134,
+        "valor": 10,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Embarque pela porta não convencional"
+    },
+    {
+        "codigo": 135,
+        "valor": 20,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Falta de equipamento obrigatório (Cordonel da campainha)"
+    },
+    {
+        "codigo": 136,
+        "valor": 50,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Retorno da catraca causando redução de passageiros (sem emitir COC)"
+    },
+    {
+        "codigo": 137,
+        "valor": 50,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Não entregar BCD"
+    },
+    {
+        "codigo": 138,
+        "valor": 50,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - BCDs com os mesmos dados"
+    },
+    {
+        "codigo": 139,
+        "valor": 50,
+        "descricao": "Art. 38 § 1 - Decreto 2751 - N/89 - Uso indevido da frota pública"
+    },
+    {
+        "codigo": 140,
+        "valor": 50,
+        "descricao": "Art. 15 Inc. I e III - Decreto 2751 - N/89 - Descumprimento da OSO (Supressão de horários sem autorização)"
+    },
+    {
+        "codigo": 141,
+        "valor": 500,
+        "descricao": "Art. 15 Inc. I e III - Decreto 2751 - N/89 - Suspensão total do serviço sem autorização"
+    },
+    {
+        "codigo": 142,
+        "valor": 500,
+        "descricao": "Art. 15 Inc. I e III - Decreto 2751 - N/89 - Suspensão parcial do serviço sem autorização"
+    },
+    {
+        "codigo": 143,
+        "valor": 30,
+        "descricao": "Art. 15 Inc. III - Decreto 2751 - N/89 - Descumprimento da OSO (Modificação de horários sem autorização)"
+    },
+    {
+        "codigo": 144,
+        "valor": 70,
+        "descricao": "Art. 15 Inc. III - Decreto 2751 - N/89 - Descumprimento da OSO (Supressão de frota)"
+    },
+    {
+        "codigo": 145,
+        "valor": 50,
+        "descricao": "Art. 15 Inc. X - Decreto 2751 - N/89 - Não comunicar à CETURB-GV acidente ocorrido no prazo determinado"
+    },
+    {
+        "codigo": 146,
+        "valor": 50,
+        "descricao": "Art. 15 Inc. XI - Decreto 2751 - N/89 - Preencher incorretamente, rasurar ou omitir dados no BCD"
+    },
+    {
+        "codigo": 147,
+        "valor": 90,
+        "descricao": "Art. 15 Inc. XI - Decreto 2751 - N/89 - Entregar BCD fora do prazo regulamentar"
+    },
+    {
+        "codigo": 148,
+        "valor": 50,
+        "descricao": "Art. 38 Parágrafo Primeiro - Decreto 2751 - N/89 - Veículo sem o BCD"
+    },
+    {
+        "codigo": 149,
+        "valor": 10,
+        "descricao": "Art. 38 Parágrafo Único - Decreto 2751 - N/89 - Uso de um mesmo BCD em mais de um veículo"
+    },
+    {
+        "codigo": 150,
+        "valor": 50,
+        "descricao": "Art. 38 Parágrafo Primeiro 2751 - N/89 - Não apresentar a documentação conforme previsto no Artigo 74 parágrafo 1 e 2; e Artigo 75 do Decreto 3.871-N/95"
+    },
+    {
+        "codigo": 151,
+        "valor": 30,
+        "descricao": "Art. 15 Inc. VI - Decreto 2751 - N/89 - Alterar as características do veículo sem autorização da CETURB-GV"
+    },
+    {
+        "codigo": 152,
+        "valor": 90,
+        "descricao": "Art. 14 Parágrafo Único 2 - Decreto 2751 - N/89 - Recusar o fornecimento de dados exigidos pela CETURB-GV"
+    },
+    {
+        "codigo": 153,
+        "valor": 90,
+        "descricao": "Art. 14 Parágrafo Único 2 - Decreto 2751 - N/89 - Dificultar o fornecimento de dados exigidos pela CETURB-GV"
+    },
+    {
+        "codigo": 154,
+        "valor": 90,
+        "descricao": "Art. 14 Parágrafo Único 2 - Decreto 2751 - N/89 - Atrasar o fornecimento de dados exigidos pela CETURB-GV"
+    },
+    {
+        "codigo": 155,
+        "valor": 30,
+        "descricao": "Art. 25 - Decreto 2751 - N/89 - Encaminhar relação de admitidos e demitidos fora do prazo regulamentar"
+    },
+    {
+        "codigo": 156,
+        "valor": 1000,
+        "descricao": "Art. 61 Parágrafo Único - Decreto 2751 - N/89 - Não depositar no prazo previsto os repasses de compensação"
+    },
+    {
+        "codigo": 157,
+        "valor": 1000,
+        "descricao": "Art. 63 - Decreto 2751 - N/89 - Não depositar no prazo a caução de garantia dos serviços"
+    },
+    {
+        "codigo": 158,
+        "valor": 30,
+        "descricao": "Art. 13 e Art. 43 Inciso X - Decreto 2989 - N/90 - Não manter, conservar e limpar área sob sua responsabilidade"
+    },
+    {
+        "codigo": 159,
+        "valor": 20,
+        "descricao": "Art. 16 - Decreto 2989 - N/90 - Fazer publicidade sem permissão"
+    },
+    {
+        "codigo": 160,
+        "valor": 20,
+        "descricao": "Art. 25 Inciso I - Decreto 2989 - N/90 - Utilizar aparelho sonoro"
+    },
+    {
+        "codigo": 161,
+        "valor": 20,
+        "descricao": "Art. 25 Inciso II - Decreto 2989 - N/90 - Alterar fachada externa"
+    },
+    {
+        "codigo": 162,
+        "valor": 50,
+        "descricao": "Art. 25 Inciso III - Decreto 2989 - N/90 - Praticar comércio não legalmente estabelecido"
+    },
+    {
+        "codigo": 163,
+        "valor": 20,
+        "descricao": "Art. 25 Inciso IV - Decreto 2989 - N/90 - Depositar mercadoria ou lixo nas áreas comuns"
+    },
+    {
+        "codigo": 164,
+        "valor": 50,
+        "descricao": "Art. 25 Inciso V - Decreto 2989 - N/90 - Guardar ou depositar substâncias não permitidas"
+    },
+    {
+        "codigo": 165,
+        "valor": 20,
+        "descricao": "Art. 25 Inciso VI - Decreto 2989 - N/90 - Limpar veículos"
+    },
+    {
+        "codigo": 166,
+        "valor": 30,
+        "descricao": "Art. 25 Inciso VII e Art. 43 Inc. VII - Decreto 2989 - N/90 - Vender bebidas alcoólicas"
+    },
+    {
+        "codigo": 167,
+        "valor": 20,
+        "descricao": "Art. 25 Inciso VIII e Art. 43 Inc. VIII - Decreto 2989 - N/90 - Vender produtos e publicações não permitidas"
+    },
+    {
+        "codigo": 168,
+        "valor": 20,
+        "descricao": "Art. 26 e Art. 41 Inciso I a IV - Decreto 2989 - N/90 - Desobedecer plano funcional"
+    },
+    {
+        "codigo": 169,
+        "valor": 10,
+        "descricao": "Art. 28 - Decreto 2989 - N/90 - Trafegar acima da velocidade máxima permitida"
+    },
+    {
+        "codigo": 170,
+        "valor": 10,
+        "descricao": "Art. 30 e Art. 41 Inciso IV - Decreto 2989 - N/90 - Estacionar incorretamente o veículo"
+    },
+    {
+        "codigo": 171,
+        "valor": 30,
+        "descricao": "Art. 31 e Art. 41 Inciso VI - Decreto 2989 - N/90 - Permanecer com veículo parado no berço mais de 15 min"
+    },
+    {
+        "codigo": 172,
+        "valor": 10,
+        "descricao": "Art. 41 Inciso V e Art. 31 Parágrafo Único - Decreto 2989 - N/90 - Não desligar o motor do veículo nas paradas acima de 5 minutos"
+    },
+    {
+        "codigo": 173,
+        "valor": 10,
+        "descricao": "Art. 33 e Art. 41 Inciso VII e IX - Decreto 2989 - N/90 - Manobrar veículo sem necessidade ou perigosamente"
+    },
+    {
+        "codigo": 174,
+        "valor": 50,
+        "descricao": "Art. 34 e Art. 41 Inciso XXIX - Decreto 2989 - N/90 - Não rebocar veículo avariado"
+    },
+    {
+        "codigo": 175,
+        "valor": 50,
+        "descricao": "Art. 38 - Decreto 2989 - N/90 - Não manter em perfeito funcionamento a catraca de terminal"
+    },
+    {
+        "codigo": 176,
+        "valor": 50,
+        "descricao": "Art. 39 - Decreto 2989 - N/90 - Substituir catraca sem supervisão"
+    },
+    {
+        "codigo": 177,
+        "valor": 50,
+        "descricao": "Art. 40 - Decreto 2989 - N/90 - Não manter frota reserva no terminal"
+    },
+    {
+        "codigo": 178,
+        "valor": 10,
+        "descricao": "Art. 41 Inciso X e Art. 43 Inciso V - Decreto 2989 - N/90 - Não seguir as orientações dos agentes da CETURB-GV em serviço"
+    },
+    {
+        "codigo": 179,
+        "valor": 5,
+        "descricao": "Art. 41 Inciso XI - Decreto 2989 - N/90 - Prejudicar a travessia de pedestres"
+    },
+    {
+        "codigo": 180,
+        "valor": 10,
+        "descricao": "Art. 41 Inciso XII - Decreto 2989 - N/90 - Trafegar com o veículo com as portas abertas"
+    },
+    {
+        "codigo": 181,
+        "valor": 5,
+        "descricao": "Art. 41 Inciso XIII - Decreto 2989 - N/90 - Ausentar-se do veículo sem autorização"
+    },
+    {
+        "codigo": 182,
+        "valor": 10,
+        "descricao": "Art. 41 Inciso XVII - Decreto 2989 - N/90 - Dificultar a ação fiscalizadora"
+    },
+    {
+        "codigo": 183,
+        "valor": 10,
+        "descricao": "Art. 41 Inciso XIX - Decreto 2989 - N/90 - Permitir acesso de usuário sem cobrar a tarifa"
+    },
+    {
+        "codigo": 184,
+        "valor": 10,
+        "descricao": "Art. 41 Inciso XXV - Decreto 2989 - N/90 - Não permitir acesso de pessoas credenciadas"
+    },
+    {
+        "codigo": 185,
+        "valor": 50,
+        "descricao": "Art. 47 Inciso VII - Decreto 2989 - N/90 - Não observar tabelamento de preços"
+    },
+    {
+        "codigo": 186,
+        "valor": 30,
+        "descricao": "Art. 43 Inciso XI - Decreto 2989 - N/90 - Manter estabelecimento fechado no período definido para funcionamento"
+    },
+    {
+        "codigo": 187,
+        "valor": 10,
+        "descricao": "Art. 43 Inciso XII e Art. 44 - Decreto 2989 - N/90 - Sonegar informações"
+    },
+    {
+        "codigo": 188,
+        "valor": 5,
+        "descricao": "Art. 47 Inciso II - Decreto 2989 - N/90 - Não estar uniformizado e identificado"
+    }
+]

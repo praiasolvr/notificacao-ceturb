@@ -11,7 +11,7 @@ import { TbReport } from "react-icons/tb";
 import { BiSolidReport } from "react-icons/bi";
 
 interface SidebarProps {
-  isOpen: boolean;  
+  isOpen: boolean;
   onClose: () => void;
 }
 
@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   }, []);
 
   const location = useLocation();
-  const { setUser } = useUser();
+  const { user, setUser } = useUser();
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -123,11 +123,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <FaHome style={iconStyle} /> Dashboard
         </Link>
 
-        <Link to="/importar-notificacoes" onClick={handleLinkClick}
-          style={{ ...linkStyle, ...(location.pathname.startsWith('/importar-notificacoes') ? activeLinkStyle : {}) }}>
-          <TbReport style={iconStyle} /> Importar Notificações
-        </Link>
- 
+        {user?.setor === 'Cct' && (
+          <Link to="/importar-notificacoes" onClick={handleLinkClick}
+            style={{ ...linkStyle, ...(location.pathname.startsWith('/importar-notificacoes') ? activeLinkStyle : {}) }}>
+            <TbReport style={iconStyle} /> Importar Notificações
+          </Link>
+        )}
+
         {/* <Link to="/relatorio-solicitacoes" onClick={handleLinkClick}
           style={{ ...linkStyle, ...(location.pathname.startsWith('/relatorio-solicitacoes') ? activeLinkStyle : {}) }}>
           <BiSolidReport style={iconStyle} /> Visualizar Notificações
@@ -136,6 +138,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <Link to="/relatorio-notificacoes" onClick={handleLinkClick}
           style={{ ...linkStyle, ...(location.pathname.startsWith('/relatorio-notificacoes') ? activeLinkStyle : {}) }}>
           <BiSolidReport style={iconStyle} /> Relatórios Notificações
+        </Link>
+
+        <Link to="/informacoes-notificacoes" onClick={handleLinkClick}
+          style={{ ...linkStyle, ...(location.pathname.startsWith('/informacoes-notificacoes') ? activeLinkStyle : {}) }}>
+          <TbReport style={iconStyle} /> Informações Notificações
         </Link>
       </nav>
 

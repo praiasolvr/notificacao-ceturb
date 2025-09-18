@@ -662,6 +662,12 @@ const RelatorioNotificacoes: React.FC = () => {
                                         onClick={() => setChatAberto(n.codigo)}
                                     >
                                         <span
+                                            style={{
+                                                position: 'absolute',
+                                                top: '-6px',
+                                                right: '-8px',
+                                                zIndex: 1
+                                            }}
                                             className={`badge ms-1 ${n.qtdComentarios > 0 ? 'bg-danger' : 'bg-secondary'}`}
                                         >
                                             {n.qtdComentarios}
@@ -735,6 +741,12 @@ const RelatorioNotificacoes: React.FC = () => {
                                         onClick={() => setChatAberto(n.codigo)}
                                     >
                                         <span
+                                            style={{
+                                                position: 'absolute',
+                                                top: '-6px',
+                                                right: '-8px',
+                                                zIndex: 1
+                                            }}
                                             className={`badge ms-1 ${n.qtdComentarios > 0 ? 'bg-danger' : 'bg-secondary'}`}
                                         >
                                             {n.qtdComentarios}

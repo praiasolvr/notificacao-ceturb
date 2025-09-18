@@ -21,32 +21,25 @@ const Dashboard = () => {
    * A ordem segue: Cadastrar Tipo de Serviço, Cliente, Cadastrar Cliente, Serviço, Cadastrar Serviço.
    */
   const menuOptions = [
-    {
-      label: 'Importar Notificações',
-      icon: <TbReport size={22} />,
-      onClick: () => navigate('/importar-notificacoes', { replace: true }),
-    },
+    ...(user?.setor === 'Cct'
+      ? [
+        {
+          label: 'Importar Notificações',
+          icon: <TbReport size={22} />,
+          onClick: () => navigate('/importar-notificacoes', { replace: true }),
+        },
+      ]
+      : []),
     {
       label: 'Relatório Notificações',
       icon: <BiSolidReport size={22} />,
       onClick: () => navigate('/relatorio-notificacoes', { replace: true }),
-    }
-    ,
-    // {
-    //   label: 'Cadastrar Cliente',
-    //   icon: <FaPlus size={22} />,
-    //   onClick: () => navigate('/cadastrar-cliente', { replace: true }),
-    // },
-    // {
-    //   label: 'Serviços',
-    //   icon: <FaCogs size={22} />,
-    //   onClick: () => navigate('/servicos', { replace: true }),
-    // },
-    // {
-    //   label: 'Cadastrar Serviço',
-    //   icon: <FaPlus size={22} />,
-    //   onClick: () => navigate('/cadastrar-servico', { replace: true }),
-    // },
+    },
+    {
+      label: 'Informações Notificações',
+      icon: <TbReport size={22} />,
+      onClick: () => navigate('/informacoes-notificacoes', { replace: true }),
+    },
   ];
 
   return (

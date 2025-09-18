@@ -13,6 +13,7 @@ interface User {
   uid: string | null;      // ID único do usuário (identificador único)
   displayName: string | null; // Nome exibido do usuário (caso tenha configurado no Firebase)
   setor: string | null;      // Setor do usuário (adicionado conforme a interface Cliente)
+  funcao?: string | null; // opcional
 }
 
 // Tipo do contexto de usuário que será acessado por outros componentes

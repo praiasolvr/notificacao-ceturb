@@ -12,8 +12,8 @@ import { account, ID } from '../../models/appwrite'
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('cct@viacaopraiasol.com.br');
-  const [senha, setSenha] = useState('cct1254');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [nome, setNome] = useState('');
 
@@ -51,6 +51,8 @@ const Login = () => {
           email: userCredential.user.email,
           uid: userCredential.user.uid,
           displayName: userCredential.user.displayName,
+          setor: setor,
+          funcao: funcao,
         });
         Swal.fire({
           title: '🎉 Bem-vindo!',
@@ -111,7 +113,7 @@ const Login = () => {
             email: userCredential.user.email,
             uid: uid,
             displayName: userCredential.user.displayName,
-            setor: userCredential.user.setor,
+            setor: setor,
             funcao: funcao,
           }
         );
