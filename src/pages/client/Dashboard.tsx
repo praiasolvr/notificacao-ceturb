@@ -40,6 +40,11 @@ const Dashboard = () => {
       icon: <TbReport size={22} />,
       onClick: () => navigate('/informacoes-notificacoes', { replace: true }),
     },
+    {
+      label: 'Relatório Juridico',
+      icon: <TbReport size={22} />,
+      onClick: () => navigate('/relatorio-juridico', { replace: true }),
+    },
   ];
 
   return (

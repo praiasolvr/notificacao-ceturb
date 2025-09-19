@@ -130,7 +130,7 @@ const RelatorioNotificacoes: React.FC = () => {
                 grupo,
                 "notificacoes",
                 chatAberto,
-                "jugamento",
+                "julgamento",
                 "resposta"
             );
 
@@ -174,7 +174,7 @@ const RelatorioNotificacoes: React.FC = () => {
 
     async function carregarStatusJulgamento(grupo: string, codigo: string): Promise<string | null> {
         try {
-            const julgamentoRef = doc(db, "notificacoes", grupo, "notificacoes", codigo, "jugamento", "resposta");
+            const julgamentoRef = doc(db, "notificacoes", grupo, "notificacoes", codigo, "julgamento", "resposta");
             const snap = await getDoc(julgamentoRef);
             return snap.exists() ? snap.data().status ?? null : null;
         } catch (err) {
@@ -457,7 +457,7 @@ const RelatorioNotificacoes: React.FC = () => {
             grupo,
             "notificacoes",
             chatAberto,
-            "jugamento",
+            "julgamento",
             "resposta"
         );
 

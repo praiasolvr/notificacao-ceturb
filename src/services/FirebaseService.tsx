@@ -1,4 +1,4 @@
-// firebase-service.tsx
+// src/services/FirebaseService.tsx
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig"; // Importando a instância de db configurada no firebase-config
 
