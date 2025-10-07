@@ -149,6 +149,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           style={{ ...linkStyle, ...(location.pathname.startsWith('/relatorio-juridico') ? activeLinkStyle : {}) }}>
           <TbReport style={iconStyle} /> Relatório Jurídico
         </Link>
+
+        <Link to="/relatorio-financeiro" onClick={handleLinkClick}
+          style={{ ...linkStyle, ...(location.pathname.startsWith('/relatorio-financeiro') ? activeLinkStyle : {}) }}>
+          <TbReport style={iconStyle} /> Relatório Financeiro
+        </Link>
       </nav>
 
       {/* Botão Sair */}

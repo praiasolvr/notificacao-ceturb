@@ -45,6 +45,11 @@ const Dashboard = () => {
       icon: <TbReport size={22} />,
       onClick: () => navigate('/relatorio-juridico', { replace: true }),
     },
+    {
+      label: 'Relatório Financeiro',
+      icon: <TbReport size={22} />,
+      onClick: () => navigate('/relatorio-financeiro', { replace: true }),
+    },
   ];
 
   return (
