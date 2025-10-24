@@ -1,25 +1,39 @@
-// src/pages/client/Dashboard.tsx
-
+import React from 'react';
 import { useUser } from '../../contexts/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaSignOutAlt } from 'react-icons/fa';
-import { colorAzul, colorBranco } from '../../values/colors';
 import { TbReport } from 'react-icons/tb';
 import { BiSolidReport } from 'react-icons/bi';
+import { colorAzul, colorBranco } from '../../values/colors';
 
 /**
- * Componente de dashboard principal após login.
- * Exibe um menu com botões de navegação para páginas do sistema.
+ * Dashboard principal exibido após o login.
+ * Mostra as opções de menu de acordo com o setor do usuário.
  */
-const Dashboard = () => {
-  const { user, logout } = useUser(); // Hook de autenticação
-  const navigate = useNavigate();     // Hook para navegar entre rotas
+const Dashboard: React.FC = () => {
+  const { user, logout, loading } = useUser();
+  const navigate = useNavigate();
 
-  /**
-   * Lista de opções de navegação do menu do dashboard.
-   * A ordem segue: Cadastrar Tipo de Serviço, Cliente, Cadastrar Cliente, Serviço, Cadastrar Serviço.
-   */
+  // Enquanto o contexto ainda estiver carregando o usuário
+  if (loading) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center', fontSize: '18px' }}>
+        Carregando dados do usuário...
+      </div>
+    );
+  }
+
+  // Caso o usuário ainda não tenha sido carregado corretamente
+  if (!user) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center', fontSize: '18px' }}>
+        Nenhum usuário autenticado.
+      </div>
+    );
+  }
+
+  // Definição das opções de menu
   const menuOptions = [
     ...(user?.setor === 'Cct'
       ? [
@@ -41,7 +55,7 @@ const Dashboard = () => {
       onClick: () => navigate('/informacoes-notificacoes', { replace: true }),
     },
     {
-      label: 'Relatório Juridico',
+      label: 'Relatório Jurídico',
       icon: <TbReport size={22} />,
       onClick: () => navigate('/relatorio-juridico', { replace: true }),
     },
@@ -70,6 +84,7 @@ const Dashboard = () => {
           fontSize: '26px',
           fontWeight: 'bold',
           marginBottom: '30px',
+          textAlign: 'center',
         }}
       >
         👋 Bem-vindo, {user?.displayName || user?.email || 'Usuário'}!

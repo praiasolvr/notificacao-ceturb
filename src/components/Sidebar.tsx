@@ -120,7 +120,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <nav style={navStyle}>
         <Link to="/dashboard" onClick={handleLinkClick}
           style={{ ...linkStyle, ...(location.pathname.startsWith('/dashboard') ? activeLinkStyle : {}) }}>
-          <FaHome style={iconStyle} /> Dashboard
+          <FaHome style={iconStyle} /> Menu
         </Link>
 
         {user?.setor === 'Cct' && (
