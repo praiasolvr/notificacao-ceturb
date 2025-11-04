@@ -13,6 +13,7 @@
     "appwrite": "^19.0.0",
     "bootstrap": "^5.3.5",
     "chart.js": "^4.5.0",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "date-fns": "^4.1.0",
     "firebase": "^11.6.0",
     "framer-motion": "^12.9.2",

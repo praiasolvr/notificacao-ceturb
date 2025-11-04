@@ -6,6 +6,9 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
+
 import {
     Chart as ChartJS,
     BarElement,
@@ -23,7 +26,8 @@ ChartJS.register(
     LinearScale,
     Tooltip,
     Legend,
-    Title
+    Title,
+    ChartDataLabels // 👈 registre aqui
 );
 
 import { Spinner } from "react-bootstrap";
@@ -38,6 +42,20 @@ interface Notificacao {
     ocorrencia: string;
     codigo: string;
 }
+
+const barOptionsComLabels = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        datalabels: {
+            anchor: 'end',
+            align: 'top',
+            color: '#000',
+            font: { weight: 'bold' },
+            formatter: (value: number) => Math.round(value).toString()
+        }
+    }
+};
 
 const ordemGarg = [
     "AS12", "AS13", "AS14", "AS15", "AS16",
@@ -234,9 +252,26 @@ const RelatorioFinanceiro: React.FC = () => {
                             <Bar
                                 data={{
                                     labels: gargKeysOrdenadas,
-                                    datasets: [{ label: "R$", data: gargFinanceiroOrdenado, backgroundColor: "rgba(40,167,69,0.7)" }],
+                                    datasets: [{
+                                        label: "R$",
+                                        data: gargKeysOrdenadas.map(g => Math.round(mapaFinanceiro[g] || 0)),
+                                        backgroundColor: "rgba(40,167,69,0.7)"
+                                    }],
                                 }}
-                                options={{ responsive: true, maintainAspectRatio: false }}
+                                options={{
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: { display: true },
+                                        datalabels: {
+                                            anchor: 'end',
+                                            align: 'top',
+                                            color: '#000',
+                                            font: { weight: 'bold' },
+                                            formatter: (value: number) => `R$ ${value.toLocaleString("pt-BR")}`
+                                        }
+                                    }
+                                }}
                             />
                         </div>
                     </div>
@@ -292,9 +327,31 @@ const RelatorioFinanceiro: React.FC = () => {
                                             type="pie"
                                             data={{
                                                 labels,
-                                                datasets: [{ label: "R$", data: valorData, backgroundColor: cores }],
+                                                datasets: [
+                                                    {
+                                                        label: "R$",
+                                                        data: valorData,
+                                                        backgroundColor: cores,
+                                                    },
+                                                ],
                                             }}
-                                            options={{ responsive: true, maintainAspectRatio: false }}
+                                            options={{
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                plugins: {
+                                                    datalabels: {
+                                                        formatter: (value) => {
+                                                            return `R$ ${Math.floor(value).toLocaleString('pt-BR')}`;
+                                                        },
+                                                        color: '#fff',
+                                                        font: {
+                                                            weight: 'bold',
+                                                            size: 14,
+                                                        },
+                                                    },
+                                                },
+                                            }}
+                                            plugins={[ChartDataLabels]}
                                         />
                                         <div className="mt-2 text-center">
                                             <strong>Total:</strong> R$ {totalValor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}

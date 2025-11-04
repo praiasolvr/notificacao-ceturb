@@ -1,3 +1,4 @@
+// src/pages/admin/RelatorioJuridico.tsx
 import React, { useEffect, useState } from "react";
 import {
     collection,
@@ -47,6 +48,7 @@ const RelatorioJuridico: React.FC = () => {
     const [comJulgamento, setComJulgamento] = useState(0);
     const [recorriveis, setRecorriveis] = useState(0);
     const [irrecorriveis, setIrrecorriveis] = useState(0);
+    const [analiseEmProgresso, setAnaliseEmProgresso] = useState(false);
 
     useEffect(() => {
         async function carregarGrupos() {
@@ -94,10 +96,11 @@ const RelatorioJuridico: React.FC = () => {
         if (anoSel && mesSel !== null && gargSel) {
             analisarNotificacoes();
         }
-    }, [anoSel, mesSel, gargSel]);
+    }, [gargSel]);
 
     async function analisarNotificacoes() {
-        setLoading(true);
+        if (analiseEmProgresso) return;
+        setAnaliseEmProgresso(true);
 
         const notificacoesFiltradas = notificacoes.filter((n) => {
             const [_, mes, ano] = n.data.split("/");
@@ -116,7 +119,6 @@ const RelatorioJuridico: React.FC = () => {
         for (const n of notificacoesFiltradas) {
             const grupo = n.data.split("/")[2] + n.data.split("/")[1].padStart(2, "0");
 
-            // Comentários
             const comentariosRef = collection(
                 db,
                 "notificacoes",
@@ -130,7 +132,6 @@ const RelatorioJuridico: React.FC = () => {
                 comentadasCount++;
             }
 
-            // Julgamento
             const respostaRef = doc(
                 db,
                 "notificacoes",
@@ -143,10 +144,9 @@ const RelatorioJuridico: React.FC = () => {
             const respostaDoc = await getDoc(respostaRef);
 
             if (respostaDoc.exists()) {
-                
                 const status = (respostaDoc.data()?.status || "")
                     .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "") // tira acentos
+                    .replace(/[\u0300-\u036f]/g, "")
                     .toLowerCase();
 
                 if (status !== "em analise") {
@@ -161,7 +161,7 @@ const RelatorioJuridico: React.FC = () => {
         setComJulgamento(julgadasCount);
         setRecorriveis(recorriveisCount);
         setIrrecorriveis(irrecorriveisCount);
-        setLoading(false);
+        setAnaliseEmProgresso(false);
     }
 
     const anosDetectados = Array.from(
@@ -229,7 +229,7 @@ const RelatorioJuridico: React.FC = () => {
             {
                 data: [
                     comJulgamento,
-                    total - comJulgamento // inclui não existentes + em análise
+                    total - comJulgamento
                 ],
                 backgroundColor: ["#007bff", "#ffc107"],
             },
@@ -243,7 +243,7 @@ const RelatorioJuridico: React.FC = () => {
                 data: [
                     recorriveis,
                     irrecorriveis,
-                    total - recorriveis - irrecorriveis // em análise ou não julgadas
+                    total - recorriveis - irrecorriveis
                 ],
                 backgroundColor: ["#17a2b8", "#dc3545", "#6c757d"],
             },
@@ -258,8 +258,10 @@ const RelatorioJuridico: React.FC = () => {
     const handleMesClick = (_event: any, elements: any[]) => {
         if (elements.length > 0) {
             const index = elements[0].index;
+            if (mesSel !== index) {
+                setGargSel(null);
+            }
             setMesSel(index);
-            setGargSel(null);
         }
     };
 
@@ -317,23 +319,34 @@ const RelatorioJuridico: React.FC = () => {
             )}
 
             {gargSel && total > 0 && (
-                <div className="mb-4">
-                    <h5>Indicadores — {gargSel}</h5>
-                    <div className="d-flex flex-wrap gap-4" style={estiloGrafico}>
-                        <div>
-                            <h6>% Comentadas</h6>
-                            <Pie data={chartComentarios} />
+                <>
+                    {analiseEmProgresso ? (
+                        <div className="text-center my-4">
+                            <div className="spinner-border text-secondary" role="status">
+                                <span className="visually-hidden">Analisando...</span>
+                            </div>
+                            <p className="mt-2">Analisando dados jurídicos...</p>
                         </div>
-                        <div>
-                            <h6>% Avaliações Jurídicas</h6>
-                            <Pie data={chartJuridico} />
+                    ) : (
+                        <div className="mb-4">
+                            <h5>Indicadores — {gargSel}</h5>
+                            <div className="d-flex flex-wrap gap-4" style={estiloGrafico}>
+                                <div>
+                                    <h6>% Comentadas</h6>
+                                    <Pie data={chartComentarios} />
+                                </div>
+                                <div>
+                                    <h6>% Avaliações Jurídicas</h6>
+                                    <Pie data={chartJuridico} />
+                                </div>
+                                <div>
+                                    <h6>% Recorribilidade</h6>
+                                    <Pie data={chartRecorribilidade} />
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h6>% Recorribilidade</h6>
-                            <Pie data={chartRecorribilidade} />
-                        </div>
-                    </div>
-                </div>
+                    )}
+                </>
             )}
         </div>
     );

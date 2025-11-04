@@ -2,6 +2,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './contexts/UserContext';
 
+// Contextos notificações
+import { NotificacoesProvider } from './contexts/NotificacoesContext';
+
 // Layouts
 import PublicLayout from './layouts/PublicLayout';
 import PrivateLayout from './layouts/PrivateLayout';
@@ -32,41 +35,45 @@ import RelatorioFinanceiro from './pages/admin/RelatorioFinanceiro';
 function App() {
   return (
     <UserProvider>
-      <Router>
-        <Routes>
+      <NotificacoesProvider>
+        <Router>
+          <Routes>
 
-          {/* Rotas públicas sem autenticação, com Header */}
-          <Route path="/" element={<><Header /><Home /></>} />
-          <Route path="/login" element={<><Header /><Login /></>} />
+            {/* Rotas públicas sem autenticação, com Header */}
+            <Route path="/" element={<><Header /><Home /></>} />
+            <Route path="/login" element={<><Header /><Login /></>} />
 
-          {/* Rotas públicas autenticadas (clientes) com layout próprio e sem Header */}
-          <Route element={<PublicLayout />}>
-            <Route path="/dashboard-cliente-publico" element={<DashboardClientePublico />} />
+            {/* Rotas públicas autenticadas (clientes) com layout próprio e sem Header */}
+            <Route element={<PublicLayout />}>
+              <Route path="/dashboard-cliente-publico" element={<DashboardClientePublico />} />
 
-            {/* Solicitacoes */}
-            <Route path="/nova-solicitacao" element={<NovaSolicitacao />} />
-            <Route path="/minhas-solicitacoes" element={<MinhasSolicitacoes />} />
+              {/* Solicitacoes */}
+              <Route path="/nova-solicitacao" element={<NovaSolicitacao />} />
+              <Route path="/minhas-solicitacoes" element={<MinhasSolicitacoes />} />
 
-          </Route>
+            </Route>
 
-          {/* Rotas privadas protegidas por autenticação (admin ou usuários internos) */}
-          <Route element={
-            <ProtectedRoute>
-              <PrivateLayout />
-            </ProtectedRoute>
-          }>
-            {/* Dashboard inicial */}
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/importar-notificacoes" element={<ImportarNotificacoes />} />
-            <Route path="/relatorio-solicitacoes" element={<RelatorioSolicitacoes />} />
-            <Route path="/relatorio-notificacoes" element={<RelatorioNotificacoes />} />
-            <Route path="/informacoes-notificacoes" element={<InformacoesNotificacoes />} />
-            <Route path="/relatorio-juridico" element={<RelatorioJuridico />} />
-            <Route path="/relatorio-financeiro" element={<RelatorioFinanceiro />} />
-          </Route>
+            {/* Rotas privadas protegidas por autenticação (admin ou usuários internos) */}
+            <Route element={
+              <ProtectedRoute>
+                <PrivateLayout />
+              </ProtectedRoute>
+            }>
+              {/* Dashboard inicial */}
 
-        </Routes>
-      </Router>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/importar-notificacoes" element={<ImportarNotificacoes />} />
+              <Route path="/relatorio-solicitacoes" element={<RelatorioSolicitacoes />} />
+              <Route path="/relatorio-notificacoes" element={<RelatorioNotificacoes />} />
+              <Route path="/informacoes-notificacoes" element={<InformacoesNotificacoes />} />
+              <Route path="/relatorio-juridico" element={<RelatorioJuridico />} />
+              <Route path="/relatorio-financeiro" element={<RelatorioFinanceiro />} />
+
+            </Route>
+
+          </Routes>
+        </Router>
+      </NotificacoesProvider>
     </UserProvider>
   );
 }
