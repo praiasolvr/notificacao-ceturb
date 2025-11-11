@@ -227,13 +227,9 @@ const RelatorioFinanceiro: React.FC = () => {
                     </div>
 
                     <div className="mb-4">
-
-
                         <h5>
-
-                            <img height={22} src={IconOdometro} alt='icon odomentro quilometragem' />
+                            <img height={22} src={IconOdometro} alt='icon odometro quilometragem' />
                             &nbsp; Total KM por Garagem
-
                         </h5>
                         <div style={estiloGrafico}>
                             <Bar
@@ -241,7 +237,13 @@ const RelatorioFinanceiro: React.FC = () => {
                                     labels: gargKeysOrdenadas,
                                     datasets: [{ label: "Total KM", data: gargKmOrdenado, backgroundColor: "rgba(0,123,255,0.7)" }],
                                 }}
-                                options={{ responsive: true, maintainAspectRatio: false }}
+                                options={{
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    onClick: (_, elems) => {
+                                        if (elems.length) setGargSel(gargKeysOrdenadas[elems[0].index]);
+                                    },
+                                }}
                             />
                         </div>
                     </div>
@@ -261,6 +263,9 @@ const RelatorioFinanceiro: React.FC = () => {
                                 options={{
                                     responsive: true,
                                     maintainAspectRatio: false,
+                                    onClick: (_, elems) => {
+                                        if (elems.length) setGargSel(gargKeysOrdenadas[elems[0].index]);
+                                    },
                                     plugins: {
                                         legend: { display: true },
                                         datalabels: {
