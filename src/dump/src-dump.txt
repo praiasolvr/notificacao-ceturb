@@ -1,0 +1,985 @@
+﻿===== C:\Workspaces\temp\notificacao-ceturb\src\components\ChatComentarios.tsx =====
+import { useEffect, useState } from "react";
+import { collection, addDoc, query, orderBy, onSnapshot, Timestamp, doc, updateDoc, getDocs } from "firebase/firestore";
+import { db } from "../firebaseConfig"; // caminho correto
+import { useUser } from "../contexts/UserContext"; // hook correto
+
+interface Comentario {
+    id: string;
+    autorId: string;
+    autorNome: string;
+    mensagem: string;
+    criadoEm: Timestamp;
+    adicionarComentario: (novoComentario: Comentario) => void;
+}
+
+interface Props {
+    grupo: string;
+    codigo: string;
+    onClose: () => void;
+    setNotificacoes: React.Dispatch<React.SetStateAction<any[]>>;
+}
+
+export default function ChatComentarios({ grupo, codigo, onClose, setNotificacoes }: Props) {
+    const [mensagem, setMensagem] = useState("");
+    const [comentarios, setComentarios] = useState<Comentario[]>([]); // Tipando os comentÃ¡rios
+    const [editandoComentario, setEditandoComentario] = useState<Comentario | null>(null); // Para editar um comentÃ¡rio
+    const { user } = useUser(); // pega uid e displayName
+
+    useEffect(() => {
+        const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios");
+        const q = query(comentariosRef, orderBy("criadoEm", "asc"));
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const lista = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            setComentarios(lista);
+        });
+
+        return () => unsubscribe();
+    }, [grupo, codigo]);
+
+    // FunÃ§Ã£o para enviar o comentÃ¡rio ou atualizar
+    const enviarComentario = async () => {
+        if (!mensagem.trim() || !user?.uid) return;
+
+        const comentariosRef = collection(db, "notificacoes", grupo, "notificacoes", codigo, "comentarios");
+
+        try {
+            if (editandoComentario) {
+                // Atualiza comentÃ¡rio existente
+                const comentarioRef = doc(comentariosRef, editandoComentario.id);
+                await updateDoc(comentarioRef, {
+                    mensagem,
+                    autorId: user.uid,
+                    autorNome: user.displayName || user.email,
+                    criadoEm: Timestamp.now()
+                });
+            } else {
+                // Adiciona novo comentÃ¡rio
+                await addDoc(comentariosRef, {
+                    autorId: user.uid,
+                    autorNome: user.displayName || user.email,
+                    mensagem,
+                    criadoEm: Timestamp.now()
+                });
+            }
+
+            // Limpa campos
+            setMensagem("");
+            setEditandoComentario(null);
+
+            // Recarrega os comentÃ¡rios atualizados
+            const snapshot = await getDocs(comentariosRef);
+            const comentariosData = snapshot.docs.map(doc => ({
+                id: doc.id,
+                autorNome: doc.data().autorNome,
+                mensagem: doc.data().mensagem,
+            }));
+
+            const qtdComentarios = comentariosData.length;
+
+            // Atualiza o estado de notificaÃ§Ãµes no componente pai
+            setNotificacoes((prevNotificacoes) =>
+                prevNotificacoes.map((notificacao) =>
+                    notificacao.codigo === codigo
+                        ? {
+                            ...notificacao,
+                            comentarios: comentariosData,
+                            qtdComentarios
+                        }
+                        : notificacao
+                )
+            );
+        } catch (error) {
+            console.error("Erro ao enviar ou atualizar comentÃ¡rio:", error);
+        }
+    };
+
+    // FunÃ§Ã£o para iniciar a ediÃ§Ã£o de um comentÃ¡rio
+    const editarComentario = (comentario: Comentario) => {
+        setMensagem(comentario.mensagem); // Preenche o campo de mensagem com o comentÃ¡rio a ser editado
+        setEditandoComentario(comentario); // Marca como comentÃ¡rio em ediÃ§Ã£o
+    };
+
+    return (
+        <div className="chat-popup border rounded p-3 bg-light mt-3" style={{ width: "100%", maxHeight: "400px", overflowY: "auto", zIndex: 1 }}>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+                <strong>ComentÃ¡rios:</strong>
+                {/* <button className="btn btn-sm btn-danger" onClick={onClose}>Fechar</button> */}
+            </div>
+            <div className="mb-2">
+                {comentarios.map((c) => (
+                    <div key={c.id} className="mb-1 d-flex justify-content-between">
+                        <div>
+                            <strong>{c.autorNome}:</strong> {c.mensagem}
+                        </div>
+                        {/* <button
+                            className="btn btn-sm btn-warning"
+                            onClick={() => editarComentario(c)} // BotÃ£o para editar comentÃ¡rio
+                        >
+                            Editar
+                        </button> */}
+                    </div>
+                ))}
+            </div>
+            <div className="d-flex">
+                <input
+                    type="text"
+                    className="form-control me-2"
+                    value={mensagem}
+                    onChange={(e) => setMensagem(e.target.value)}
+                    placeholder="Digite um comentÃ¡rio..."
+                />
+                <button className="btn btn-primary" onClick={enviarComentario}>
+                    {editandoComentario ? "Atualizar" : "Enviar"}  {/* Muda o texto do botÃ£o dependendo se estÃ¡ editando ou nÃ£o */}
+                </button>
+            </div>
+        </div>
+    );
+}
+
+===== C:\Workspaces\temp\notificacao-ceturb\src\components\Combobox.tsx =====
+import React, { useState } from 'react';
+
+interface Option {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  options: Option[];
+  onChange: (value: string) => void;
+}
+
+const Combobox: React.FC<Props> = ({ options, onChange }) => {
+  const [selectedValue, setSelectedValue] = useState<string>('');
+
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedValue(value);
+    onChange(value);
+  };
+
+  return (
+    <select value={selectedValue} onChange={handleChange}>
+      <option value="" disabled>Select an option</option>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>{option.label}</option>
+      ))}
+    </select>
+  );
+};
+export default Combobox;
+
+===== C:\Workspaces\temp\notificacao-ceturb\src\components\FormularioCliente.tsx =====
+// src/components/FormularioCliente.tsx
+import React, { useState, useEffect } from 'react';
+import { colorAzul } from '../values/colors';
+
+interface Cliente {
+  id?: string;
+  nome: string;
+  contatos: { tipo: string; valor: string }[];
+  endereco?: string;
+  cidade?: string;
+  estado?: string;
+  cep?: string;
+}
+
+interface FormularioClienteProps {
+  cliente?: Cliente;
+  onSubmit: (cliente: Cliente) => void;
+  onCancel?: () => void; // FunÃ§Ã£o de cancelar
+}
+
+const FormularioCliente: React.FC<FormularioClienteProps> = ({ cliente, onSubmit, onCancel }) => {
+  const [nome, setNome] = useState(cliente?.nome || '');
+  const [contatos, setContatos] = useState(cliente?.contatos || [{ tipo: '', valor: '' }]);
+  const [endereco, setEndereco] = useState(cliente?.endereco || '');
+  const [cidade, setCidade] = useState(cliente?.cidade || '');
+  const [estado, setEstado] = useState(cliente?.estado || '');
+  const [cep, setCep] = useState(cliente?.cep || '');
+
+  useEffect(() => {
+    if (cliente) {
+      setNome(cliente.nome);
+      setContatos(cliente.contatos || []);
+      setEndereco(cliente.endereco || '');
+      setCidade(cliente.cidade || '');
+      setEstado(cliente.estado || '');
+      setCep(cliente.cep || '');
+    }
+  }, [cliente]);
+
+  // FunÃ§Ã£o para salvar as alteraÃ§Ãµes ou cadastrar um novo cliente
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const clienteData: Cliente = {
+      nome,
+      contatos,
+      endereco,
+      cidade,
+      estado,
+      cep
+    };
+    onSubmit(clienteData);  // Chama a funÃ§Ã£o onSubmit quando o formulÃ¡rio for enviado
+  };
+
+  return (
+    <div className="container mt-5" style={{ backgroundColor: '#F5F5F5' }}>
+      <h2 style={{ color: colorAzul }}>
+        {cliente ? 'Editar Cliente' : 'Cadastrar Cliente'}
+      </h2>
+      <form onSubmit={handleSubmit}>  {/* Associando a funÃ§Ã£o de submit */}
+        {/* Campos do formulÃ¡rio */}
+        <div>
+          <label>Nome</label>
+          <input
+            type="text"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>EndereÃ§o</label>
+          <input
+            type="text"
+            value={endereco}
+            onChange={(e) => setEndereco(e.target.value)}
+          />
+        </div>
+        <div className="d-flex gap-2">
+          <button className="btn btn-success">
+            {cliente ? 'Salvar AlteraÃ§Ãµes' : 'Cadastrar Cliente'}
+          </button>
+
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="btn btn-secondary"
+            >
+              Cancelar
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default FormularioCliente;
+
+===== C:\Workspaces\temp\notificacao-ceturb\src\components\Header.tsx =====
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { colorBranco } from '../values/colors';
+
+const Header = () => {
+  const location = useLocation();
+  const [isDark ] = useState(false);
+  const [menuAberto, setMenuAberto] = useState(false); // Estado para controle do menu
+
+  const toggleMenu = () => setMenuAberto(!menuAberto); // Alterna estado do menu
+
+  const navLinks = [
+    { to: '/', label: 'Home' },
+    // { to: '/agendamento', label: 'Agendar' },
+    // { to: '/como-chegar', label: 'Como Chegar' },
+    { to: '/login', label: 'Login', isButton: true },
+  ];
+
+  return (
+    <nav
+      className="navbar navbar-expand-lg shadow-sm sticky-top"
+      style={{
+        backdropFilter: 'blur(8px)',
+        backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(13, 71, 161, 0.9)',
+        transition: 'background-color 0.3s ease',
+      }}
+    >
+      <div className="container">
+        <Link className="navbar-brand fw-bold fs-4 d-flex align-items-center" to="/" style={{ color: colorBranco }}>
+          <span style={{ letterSpacing: '1px' }}>ServiÃ§os</span>
+          <span className="text-warning ms-1">NotificaÃ§Ãµes CETURB</span>
+        </Link>
+
+        {/* BotÃ£o do menu hambÃºrguer */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          onClick={toggleMenu} // Altera o estado do menu
+          aria-expanded={menuAberto}
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon" style={{ filter: 'invert(1)' }}></span>
+        </button>
+
+        {/* Links do menu */}
+        <div className={`collapse navbar-collapse justify-content-end ${menuAberto ? 'show' : ''}`}>
+          <ul className="navbar-nav align-items-center">
+            {navLinks.map((item) => (
+              <li className="nav-item" key={item.to}>
+                <Link
+                  className={`nav-link px-3 ${location.pathname === item.to ? 'active-link' : ''}`}
+                  to={item.to}
+                  style={{
+                    color: item.isButton ? '#fff' : colorBranco,
+                    backgroundColor: item.isButton ? '#ffc107' : 'transparent',
+                    borderRadius: item.isButton ? '20px' : '0',
+                    marginLeft: item.isButton ? '10px' : '0',
+                    marginTop: item.isButton ? '10px' : '0', 
+                    padding: item.isButton ? '6px 15px' : '',
+                    fontWeight: item.isButton ? '600' : 'normal',
+                    transition: 'all 0.3s ease',
+                    textDecoration: 'none',
+                  }}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <style>
+        {`
+          .active-link {
+            border-bottom: 2px solid #ffc107;
+          }
+
+          .nav-link:hover {
+            color: #000 !important;
+          }
+
+          .navbar-brand:hover {
+            text-shadow: 1px 1px 4px #ffffff55;
+          }
+
+          .show {
+            display: block !important; /* Garante que o menu serÃ¡ visÃ­vel quando aberto */
+          }
+        `}
+      </style>
+    </nav>
+  );
+};
+
+export default Header;
+
+===== C:\Workspaces\temp\notificacao-ceturb\src\components\LoadingButton.tsx =====
+// src/components/LoadingButton.tsx
+import React, { useState } from 'react';
+
+interface LoadingButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  onClick?: () => Promise<void> | void;
+  loadingText?: string;
+  children: React.ReactNode;
+}
+
+const LoadingButton: React.FC<LoadingButtonProps> = ({
+  onClick,
+  children,
+  loadingText = 'Carregando...',
+  disabled,
+  type = 'button',
+  ...rest
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (type === 'submit') return; // para forms, deixa o submit funcionar normalmente
+    if (isLoading || disabled) return;
+
+    try {
+      setIsLoading(true);
+      await onClick?.();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <button
+      type={type}
+      {...rest}
+      onClick={handleClick}
+      disabled={isLoading || disabled}
+      className={`btn ${rest.className || ''}`}
+    >
+      {isLoading ? (
+        <>
+          <span className="spinner-border spinner-border-sm me-2" role="status" />
+          {loadingText}
+        </>
+      ) : (
+        children
+      )}
+    </button>
+  );
+};
+
+export default LoadingButton;
+
+
+===== C:\Workspaces\temp\notificacao-ceturb\src\components\MotivoModal.tsx =====
+import React, { useState, useEffect } from 'react';
+import { Modal, Button, Form } from 'react-bootstrap';
+import { Motivo } from '../types/Motivo';
+import {
+  criarMotivo,
+  editarMotivo,
+  excluirMotivo,
+  buscarMotivos,
+} from '../repositories/SolicitacaoRepository';
+
+interface MotivoModalProps {
+  show: boolean;
+  onClose: () => void;
+  motivoEditando?: Motivo;
+  onMotivoAdicionado: (motivo: Motivo) => void;
+}
+
+const MotivoModal: React.FC<MotivoModalProps> = ({
+  show,
+  onClose,
+  motivoEditando,
+  onMotivoAdicionado,
+}) => {
+  const [nome, setNome] = useState('');
+  const [motivos, setMotivos] = useState<Motivo[]>([]);
+  const [motivoParaEdicao, setMotivoParaEdicao] = useState<Motivo | undefined>();
+
+  useEffect(() => {
+    const fetchMotivos = async () => {
+      const dados = await buscarMotivos();
+      setMotivos(dados);
+    };
+    fetchMotivos();
+  }, [motivos]);
+
+  useEffect(() => {
+    const motivo = motivoParaEdicao || motivoEditando;
+    if (motivo) {
+      setNome(motivo.nome);
+    } else {
+      setNome('');
+    }
+  }, [motivoEditando, motivoParaEdicao]);
+
+  const handleSalvar = async () => {
+    const motivoEmEdicao = motivoParaEdicao || motivoEditando;
+    try {
+      if (motivoEmEdicao) {
+        await editarMotivo(motivoEmEdicao.id, nome);
+        onMotivoAdicionado({ id: motivoEmEdicao.id, nome });
+      } else {
+        const novoMotivo = await criarMotivo(nome);
+        onMotivoAdicionado(novoMotivo);
+      }
+      
+      setMotivoParaEdicao(undefined);
+      onClose();
+    } catch (error) {
+      console.error('Erro ao salvar motivo:', error);
+    }
+  };
+
+  const handleExcluir = async () => {
+    const motivoEmEdicao = motivoParaEdicao || motivoEditando;
+    if (motivoEmEdicao) {
+      try {
+        await excluirMotivo(motivoEmEdicao.id);
+        onMotivoAdicionado({ id: motivoEmEdicao.id, nome: '' });
+      } catch (error) {
+        console.error('Erro ao excluir motivo:', error);
+      }
+    }
+    setMotivoParaEdicao(undefined);
+    onClose();
+  };
+
+  return (
+    <Modal show={show} onHide={() => {
+      setMotivoParaEdicao(undefined);
+      onClose();
+    }}>
+      <Modal.Header closeButton>
+        <Modal.Title>{motivoParaEdicao || motivoEditando ? 'Editar Motivo' : 'Adicionar Novo Motivo'}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <Form.Group controlId="formMotivo">
+            <Form.Label>Nome do Motivo</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Digite o nome do motivo"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+            />
+          </Form.Group>
+        </Form>
+
+        <hr />
+        <h6>Motivos cadastrados:</h6>
+        <ul className="list-unstyled">
+          {motivos.map((motivo) => (
+            <li key={motivo.id} className="d-flex justify-content-between align-items-center">
+              <span>{motivo.nome}</span>
+              {/* <Button
+                variant="link"
+                size="sm"
+                onClick={() => setMotivoParaEdicao(motivo)}
+              >
+                Editar
+              </Button> */}
+            </li>
+          ))}
+        </ul>
+      </Modal.Body>
+      <Modal.Footer>
+        {(motivoParaEdicao || motivoEditando) && (
+          <Button variant="danger" onClick={handleExcluir}>
+            Excluir
+          </Button>
+        )}
+        <Button variant="secondary" onClick={() => {
+          setMotivoParaEdicao(undefined);
+          onClose();
+        }}>
+          Fechar
+        </Button>
+        <Button variant="primary" onClick={handleSalvar}>
+          {(motivoParaEdicao || motivoEditando) ? 'Salvar AlteraÃ§Ãµes' : 'Adicionar Motivo'}
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
+
+export default MotivoModal;
+
+===== C:\Workspaces\temp\notificacao-ceturb\src\components\PublicSidebar.tsx =====
+import React, { useEffect, useState } from 'react';
+
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useUser } from '../contexts/UserContext';
+import Swal from 'sweetalert2';
+import { FiCalendar, FiClock, FiHome } from 'react-icons/fi';
+import { FaSignOutAlt } from 'react-icons/fa';
+import { BsCameraReelsFill } from "react-icons/bs";
+
+interface PublicSidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const PublicSidebar: React.FC<PublicSidebarProps> = ({ isOpen }) => {
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => setViewportHeight(window.innerHeight);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useUser();
+
+  // Estilo para os links do menu, aplicando destaque se for a rota atual
+  const linkStyle = (path: string) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '12px 20px',
+    textDecoration: 'none',
+    color: location.pathname === path ? '#fff' : '#e3f2fd',
+    backgroundColor: location.pathname === path ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
+    fontWeight: 500,
+    transition: 'all 0.2s',
+    borderRadius: '8px',
+  });
+
+  // FunÃ§Ã£o para lidar com logout com confirmaÃ§Ã£o via SweetAlert2
+  const handleLogout = () => {
+    Swal.fire({
+      title: 'Tem certeza que deseja sair?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, sair',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+        navigate('/'); // Redireciona para a home
+      }
+    });
+  };
+
+
+
+  const publicSidebarStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    left: isOpen ? 0 : '-250px',
+    width: '250px',
+    height: `${viewportHeight}px`,
+    backgroundColor: 'rgba(13, 71, 161, 0.9)', // Azul claro
+    color: '#fff',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    transition: 'left 0.4s ease-in-out',
+    zIndex: 999,
+    overflow: 'hidden',
+  };
+
+  const headerStyle: React.CSSProperties = {
+    textAlign: 'center',
+    padding: '1rem',
+    fontSize: '1.2rem',
+    fontWeight: 'bold',
+  };
+
+  return (
+    <aside
+      style={publicSidebarStyle}
+    >
+
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px' }}>
+
+        {/* Header */}
+        <div style={headerStyle}>
+          <div style={{ fontSize: '2rem' }}><BsCameraReelsFill /></div>
+          
+          <span style={{ color: '#ffc107' }}>Praia Sol</span>
+          <br/>
+          <span style={{ color: '#ffc107' }}>Vereda</span>
+        </div>
+
+
+        <Link to="/dashboard-cliente-publico" style={linkStyle('/dashboard-cliente-publico')}>
+          <FiHome /> Dashboard
+        </Link>
+
+        <Link to="/nova-solicitacao" style={linkStyle('/nova-solicitacao')}>
+          <FiClock /> Responder NotificaÃ§Ãµes
+        </Link>
+
+        <Link to="/minhas-solicitacoes" style={linkStyle('/minhas-solicitacoes')}>
+          <FiCalendar /> HistÃ³rico de SolicitaÃ§Ãµes
+        </Link>
+
+        {/* BotÃ£o Sair */}
+        {/* <button
+          onClick={handleLogout}
+          style={{
+            ...linkStyle(''),
+            backgroundColor: '#dc3545',
+            border: 'none',
+            color: '#e3f2fd',
+            cursor: 'pointer',
+            textAlign: 'left',
+          }}
+        >
+          <FiLogOut /> Sair
+        </button> */}
+      </nav>
+
+      {/* BotÃ£o Sair */}
+      <div style={{ padding: '1rem' }}>
+        <button
+          onClick={handleLogout}
+          style={{
+            width: '100%',
+            backgroundColor: '#dc3545',
+            color: '#fff',
+            padding: '10px',
+            fontWeight: 'bold',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            // justifyContent: 'center',
+            textAlign: 'left',
+          }}
+        >
+          <FaSignOutAlt style={{ marginRight: '8px' }} /> Sair
+        </button>
+      </div>
+
+    </aside>
+  );
+};
+
+export default PublicSidebar;
+
+===== C:\Workspaces\temp\notificacao-ceturb\src\components\Sidebar.tsx =====
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { FaHome, FaSignOutAlt } from 'react-icons/fa';
+
+import IconNotification from '../assets/icon-notificacao.svg';
+
+
+import { useUser } from '../contexts/UserContext';
+import { getAuth, signOut } from 'firebase/auth';
+import { TbReport } from "react-icons/tb";
+import { BiSolidReport } from "react-icons/bi";
+
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const [_viewportHeight, setViewportHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => setViewportHeight(window.innerHeight);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const location = useLocation();
+  const { user, setUser } = useUser();
+  const navigate = useNavigate();
+  const auth = getAuth();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    setUser(null);
+    navigate('/login');
+  };
+
+  const handleLinkClick = () => {
+    if (window.innerWidth < 768) {
+      onClose();
+    }
+  };
+
+  const sidebarStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    left: isOpen ? 0 : '-250px',
+    width: '250px',
+    height: '100dvh', // Ajuste para 100dvh
+    backgroundColor: '#0b1d40',
+    color: '#fff',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    transition: 'left 0.4s ease-in-out',
+    zIndex: 999,
+    overflow: 'hidden',
+  };
+
+  const headerStyle: React.CSSProperties = {
+    textAlign: 'center',
+    padding: '1rem',
+    fontSize: '1.2rem',
+    fontWeight: 'bold',
+  };
+
+  const navStyle: React.CSSProperties = {
+    flexGrow: 1,
+    overflowY: 'auto',
+    padding: '1rem 0.5rem',
+  };
+
+  const linkStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0.75rem 1rem',
+    color: '#fff',
+    textDecoration: 'none',
+    borderRadius: '8px',
+    marginBottom: '1rem',
+  };
+
+  const activeLinkStyle: React.CSSProperties = {
+    backgroundColor: '#0d6efd',
+  };
+
+  const iconStyle: React.CSSProperties = {
+    marginRight: '10px',
+  };
+
+  return (
+    <div style={sidebarStyle}>
+      <div>
+        {window.innerWidth < 768 && (
+          <button
+            onClick={onClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '2rem',
+              color: '#fff',
+              margin: '1rem',
+              cursor: 'pointer',
+            }}
+          >
+            Ã—
+          </button>
+        )}
+        <div style={headerStyle}>
+          {/* <div style={{ fontSize: '3rem' }}><TbReportAnalytics /></div> */}
+          <img src={IconNotification} alt="Ãcone de notificaÃ§Ã£o" style={{ width: '4rem', color: 'red' }} />
+          <br />
+          <span style={{ color: '#ffc107' }}>Praia Sol </span>
+          {/* <br /> */}
+          <span style={{ color: '#45ce38ff' }}>Vereda</span>
+        </div>
+      </div>
+
+      {/* NavegaÃ§Ã£o */}
+      <nav style={navStyle}>
+        <Link to="/dashboard" onClick={handleLinkClick}
+          style={{ ...linkStyle, ...(location.pathname.startsWith('/dashboard') ? activeLinkStyle : {}) }}>
+          <FaHome style={iconStyle} /> Menu
+        </Link>
+
+        {user?.setor === 'Cct' && (
+          <Link to="/importar-notificacoes" onClick={handleLinkClick}
+            style={{ ...linkStyle, ...(location.pathname.startsWith('/importar-notificacoes') ? activeLinkStyle : {}) }}>
+            <TbReport style={iconStyle} /> Importar NotificaÃ§Ãµes
+          </Link>
+        )}
+
+        {/* <Link to="/relatorio-solicitacoes" onClick={handleLinkClick}
+          style={{ ...linkStyle, ...(location.pathname.startsWith('/relatorio-solicitacoes') ? activeLinkStyle : {}) }}>
+          <BiSolidReport style={iconStyle} /> Visualizar NotificaÃ§Ãµes
+        </Link> */}
+
+        <Link to="/relatorio-notificacoes" onClick={handleLinkClick}
+          style={{ ...linkStyle, ...(location.pathname.startsWith('/relatorio-notificacoes') ? activeLinkStyle : {}) }}>
+          <BiSolidReport style={iconStyle} /> RelatÃ³rios NotificaÃ§Ãµes
+        </Link>
+
+        <Link to="/informacoes-notificacoes" onClick={handleLinkClick}
+          style={{ ...linkStyle, ...(location.pathname.startsWith('/informacoes-notificacoes') ? activeLinkStyle : {}) }}>
+          <TbReport style={iconStyle} /> InformaÃ§Ãµes NotificaÃ§Ãµes
+        </Link>
+
+        <Link to="/relatorio-juridico" onClick={handleLinkClick}
+          style={{ ...linkStyle, ...(location.pathname.startsWith('/relatorio-juridico') ? activeLinkStyle : {}) }}>
+          <TbReport style={iconStyle} /> RelatÃ³rio JurÃ­dico
+        </Link>
+
+        <Link to="/relatorio-financeiro" onClick={handleLinkClick}
+          style={{ ...linkStyle, ...(location.pathname.startsWith('/relatorio-financeiro') ? activeLinkStyle : {}) }}>
+          <TbReport style={iconStyle} /> RelatÃ³rio Financeiro
+        </Link>
+      </nav>
+
+      {/* BotÃ£o Sair */}
+      <div style={{ padding: '1rem' }}>
+        <button
+          onClick={handleLogout}
+          style={{
+            width: '100%',
+            backgroundColor: '#dc3545',
+            color: '#fff',
+            padding: '10px',
+            fontWeight: 'bold',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <FaSignOutAlt style={{ marginRight: '8px' }} /> Sair
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Sidebar;
+
+===== C:\Workspaces\temp\notificacao-ceturb\src\contexts\NotificacoesContext.tsx =====
+// contexts/NotificacoesContext.tsx
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+
+interface Notificacao {
+    codigo: string;
+    data: string;
+    garg: string;
+}
+
+interface NotificacoesContextType {
+    notificacoes: Notificacao[];
+    loading: boolean;
+    atualizar: () => Promise<void>;
+}
+
+const NotificacoesContext = createContext<NotificacoesContextType>({
+    notificacoes: [],
+    loading: true,
+    atualizar: async () => { },
+});
+
+export const useNotificacoes = () => useContext(NotificacoesContext);
+
+export const NotificacoesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [notificacoes, setNotificacoes] = useState<Notificacao[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [lastUpdate, setLastUpdate] = useState<string | null>(null);
+
+    async function carregarNotificacoes() {
+        setLoading(true);
+
+        const timestampDoc = await getDoc(doc(db, "metadados", "notificacoes"));
+        const remoteTimestamp = timestampDoc.data()?.lastUpdated;
+
+        if (remoteTimestamp === lastUpdate && notificacoes.length > 0) {
+            setLoading(false);
+            return;
+        }
+
+        const gruposSnap = await getDocs(collection(db, "notificacoes"));
+        const grupos = gruposSnap.docs.map(doc => doc.id);
+
+        const todas: Notificacao[] = [];
+
+        for (const grupo of grupos) {
+            const ref = collection(db, "notificacoes", grupo, "notificacoes");
+            const snap = await getDocs(ref);
+
+            for (const doc of snap.docs) {
+                const data = doc.data();
+                if (data?.data && data?.garg && data?.codigo) {
+                    todas.push({
+                        data: data.data,
+                        garg: data.garg,
+                        codigo: data.codigo,
+                    });
+                }
+            }
+        }
+
+        setNotificacoes(todas);
+        setLastUpdate(remoteTimestamp);
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        carregarNotificacoes();
+    }, []);
+
+    return (
+        <NotificacoesContext.Provider value={{ notificacoes, loading, atualizar: carregarNotificacoes }}>
+            {children}
+        </NotificacoesContext.Provider>
+    );
+};
