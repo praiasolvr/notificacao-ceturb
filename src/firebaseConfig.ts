@@ -1,5 +1,9 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeApp, getApps } from 'firebase/app';
+import {
+  getAuth,
+  browserLocalPersistence,
+  setPersistence
+} from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 // Configurações via .env
@@ -13,11 +17,18 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Inicializa o app
-const firebaseApp = initializeApp(firebaseConfig);
+// 🔥 Garante que o Firebase NÃO será inicializado duas vezes
+const firebaseApp = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApps()[0];
 
-// Exporta autenticação e firestore
+// Auth e Firestore
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+
+// 🔥🔥🔥 AQUI ESTÁ O QUE FALTAVA 🔥🔥🔥
+// Força o Firebase a manter a sessão no localStorage
+setPersistence(auth, browserLocalPersistence)
+  .catch((err) => console.error("Erro ao configurar persistência:", err));
 
 export { firebaseApp, auth, db };

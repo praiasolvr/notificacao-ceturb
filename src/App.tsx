@@ -1,9 +1,4 @@
-// App.tsx
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { UserProvider } from './contexts/UserContext';
-
-// Contextos notificações
-import { NotificacoesProvider } from './contexts/NotificacoesContext';
+import { Routes, Route } from 'react-router-dom';
 
 // Layouts
 import PublicLayout from './layouts/PublicLayout';
@@ -13,16 +8,16 @@ import PrivateLayout from './layouts/PrivateLayout';
 import Header from './components/Header';
 import ProtectedRoute from './pages/protected/ProtectedRoute';
 
-// Páginas públicas (sem login)
+// Páginas públicas
 import Home from './pages/public/Home';
 import Login from './pages/public/Login';
 
-// Páginas públicas com login (clientes)
+// Páginas públicas autenticadas
 import DashboardClientePublico from './pages/public/DashboardClientePublico';
 import MinhasSolicitacoes from './pages/public/MinhasSolicitacoes';
 import NovaSolicitacao from './pages/public/NovaSolicitacao';
 
-// Páginas privadas (admin/sistema interno)
+// Páginas privadas
 import Dashboard from './pages/client/Dashboard';
 import ImportarNotificacoes from './pages/admin/ImportarNotificacoes';
 import RelatorioSolicitacoes from './pages/admin/RelatorioSolicitacoes';
@@ -32,51 +27,38 @@ import RelatorioJuridico from './pages/admin/RelatorioJuridico';
 import RelatorioFinanceiro from './pages/admin/RelatorioFinanceiro';
 import ConfigValorKm from './pages/admin/ConfigValorKm';
 
-
 function App() {
   return (
-    <UserProvider>
-      <NotificacoesProvider>
-        <Router>
-          <Routes>
+    <Routes>
 
-            {/* Rotas públicas sem autenticação, com Header */}
-            <Route path="/" element={<><Header /><Home /></>} />
-            <Route path="/login" element={<><Header /><Login /></>} />
+      {/* Rotas públicas */}
+      <Route path="/" element={<><Header /><Home /></>} />
+      <Route path="/login" element={<><Header /><Login /></>} />
 
-            {/* Rotas públicas autenticadas (clientes) com layout próprio e sem Header */}
-            <Route element={<PublicLayout />}>
-              <Route path="/dashboard-cliente-publico" element={<DashboardClientePublico />} />
+      {/* Rotas públicas autenticadas */}
+      <Route element={<PublicLayout />}>
+        <Route path="/dashboard-cliente-publico" element={<DashboardClientePublico />} />
+        <Route path="/nova-solicitacao" element={<NovaSolicitacao />} />
+        <Route path="/minhas-solicitacoes" element={<MinhasSolicitacoes />} />
+      </Route>
 
-              {/* Solicitacoes */}
-              <Route path="/nova-solicitacao" element={<NovaSolicitacao />} />
-              <Route path="/minhas-solicitacoes" element={<MinhasSolicitacoes />} />
+      {/* Rotas privadas */}
+      <Route element={
+        <ProtectedRoute>
+          <PrivateLayout />
+        </ProtectedRoute>
+      }>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/importar-notificacoes" element={<ImportarNotificacoes />} />
+        <Route path="/relatorio-solicitacoes" element={<RelatorioSolicitacoes />} />
+        <Route path="/relatorio-notificacoes" element={<RelatorioNotificacoes />} />
+        <Route path="/informacoes-notificacoes" element={<InformacoesNotificacoes />} />
+        <Route path="/relatorio-juridico" element={<RelatorioJuridico />} />
+        <Route path="/relatorio-financeiro" element={<RelatorioFinanceiro />} />
+        <Route path="/config-valor-km" element={<ConfigValorKm />} />
+      </Route>
 
-            </Route>
-
-            {/* Rotas privadas protegidas por autenticação (admin ou usuários internos) */}
-            <Route element={
-              <ProtectedRoute>
-                <PrivateLayout />
-              </ProtectedRoute>
-            }>
-              {/* Dashboard inicial */}
-
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/importar-notificacoes" element={<ImportarNotificacoes />} />
-              <Route path="/relatorio-solicitacoes" element={<RelatorioSolicitacoes />} />
-              <Route path="/relatorio-notificacoes" element={<RelatorioNotificacoes />} />
-              <Route path="/informacoes-notificacoes" element={<InformacoesNotificacoes />} />
-              <Route path="/relatorio-juridico" element={<RelatorioJuridico />} />
-              <Route path="/relatorio-financeiro" element={<RelatorioFinanceiro />} />
-              <Route path="/config-valor-km" element={<ConfigValorKm />} />
-
-            </Route>
-
-          </Routes>
-        </Router>
-      </NotificacoesProvider>
-    </UserProvider>
+    </Routes>
   );
 }
 

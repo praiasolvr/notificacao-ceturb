@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from '../firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -25,7 +25,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    console.log("🟦 UserProvider MONTANDO...");
+
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+      console.log("🔥 onAuthStateChanged DISPAROU:", firebaseUser?.email ?? "null");
+
+      // Nenhum usuário logado
       if (!firebaseUser) {
         setUser(null);
         setLoading(false);
@@ -38,7 +43,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const ref = doc(db, "clientes", firebaseUser.uid);
         let snap = await getDoc(ref);
 
-        // 🔥 Tenta até 5 vezes caso o documento ainda não tenha sido criado
+        // Tenta algumas vezes caso o documento ainda esteja sendo criado
         let tentativas = 0;
         while (!snap.exists() && tentativas < 5) {
           await new Promise(res => setTimeout(res, 300));
@@ -71,7 +76,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      console.log("🟥 UserProvider DESMONTADO");
+      unsubscribe();
+    };
   }, []);
 
   const logout = async () => {

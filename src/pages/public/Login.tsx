@@ -1,6 +1,13 @@
 import Swal from 'sweetalert2';
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  signOut
+} from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
 import { colorAzul, colorBranco } from '../../values/colors';
@@ -15,6 +22,7 @@ const Login = () => {
   const [nome, setNome] = useState('');
   const [setor, setSetor] = useState('');
   const [funcao, setFuncao] = useState('');
+  const [manterSessao, setManterSessao] = useState(true);
 
   const { setUser } = useUser();
   const navigate = useNavigate();
@@ -26,19 +34,20 @@ const Login = () => {
     event.preventDefault();
     setLoading(true);
 
-    if (!email || !senha) {
-      Swal.fire({ icon: 'error', title: 'Atenção', text: 'Preencha todos os campos.' });
-      setLoading(false);
-      return;
-    }
-
     try {
+      // 🔥 Garante que a persistência será aplicada corretamente
+      await signOut(auth);
+
+      await setPersistence(
+        auth,
+        manterSessao ? browserLocalPersistence : browserSessionPersistence
+      );
+
       if (isLogin) {
         // LOGIN
         const userCredential = await signInWithEmailAndPassword(auth, email, senha);
         const uid = userCredential.user.uid;
 
-        // BUSCA OS DADOS DO FIRESTORE
         const snap = await getDoc(doc(db, "clientes", uid));
         const dados = snap.exists() ? snap.data() : {};
 
@@ -70,7 +79,6 @@ const Login = () => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
         const uid = userCredential.user.uid;
 
-        // SALVA NO FIRESTORE
         await setDoc(doc(db, 'clientes', uid), {
           nome,
           email,
@@ -127,6 +135,18 @@ const Login = () => {
           <div className='mb-3'>
             <label className='form-label'>Senha</label>
             <input type='password' className='form-control' value={senha} onChange={(e) => setSenha(e.target.value)} required />
+          </div>
+
+          {/* 🔥 Checkbox "Manter sessão" */}
+          <div className='mb-3'>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={manterSessao}
+                onChange={() => setManterSessao(!manterSessao)}
+              />
+              Manter sessão
+            </label>
           </div>
 
           {!isLogin && (

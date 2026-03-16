@@ -64,11 +64,15 @@ const Dashboard: React.FC = () => {
       icon: <TbReport size={22} />,
       onClick: () => navigate('/relatorio-financeiro', { replace: true }),
     },
-    {
-      label: 'Configuração - Valor por KM',
-      icon: <TbReport size={22} />,
-      onClick: () => navigate('/config-valor-km', { replace: true }),
-    },
+    ...(user?.setor === 'cct'
+      ? [
+        {
+          label: 'Configuração - Valor por KM',
+          icon: <TbReport size={22} />,
+          onClick: () => navigate('/config-valor-km', { replace: true }),
+        },
+      ]
+      : []),
   ];
 
   return (

@@ -1,33 +1,37 @@
-// src/pages/protected/ProtectedRoute.tsx
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useUser } from '../../contexts/UserContext'; // Importa o hook que gerencia o estado de usuário
-
+import { useUser } from '../../contexts/UserContext';
 
 const emailsPermitidos = [
-  'cct@viacaopraiasol.com.br', 
+  'cct@viacaopraiasol.com.br',
   'juridico@viacaopraiasol.com.br',
   'fiscalizacao@viacaopraiasol.com.br',
   'manutencao@viacaopraiasol.com.br',
   'trafego@viacaopraiasol.com.br',
 ];
 
-// Componente de rota protegida
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useUser(); // Obtém o usuário do contexto
+  const { user, loading } = useUser();
 
-  // Verifica se o usuário está logado
+  // 🔥 Enquanto o Firebase restaura a sessão, NÃO redirecionar
+  if (loading) {
+    return (
+      <div style={{ padding: 40, textAlign: 'center' }}>
+        Validando sessão...
+      </div>
+    );
+  }
+
+  // 🔥 Se terminou de carregar e não tem usuário → volta para login
   if (!user) {
-    // Se não estiver logado, redireciona para a página inicial (home)
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
-  // Verifica se o e-mail do usuário é o correto (admin)
+  // 🔥 Se o usuário existe mas não tem permissão → dashboard público
   if (!emailsPermitidos.includes(user.email ?? '')) {
-    return <Navigate to="/dashboard-cliente-publico" />;
+    return <Navigate to="/dashboard-cliente-publico" replace />;
   }
 
-  // Se o usuário estiver logado e tiver o e-mail correto, renderiza os filhos (página privada)
   return <>{children}</>;
 };
 
