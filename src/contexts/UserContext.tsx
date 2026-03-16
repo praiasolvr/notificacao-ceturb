@@ -28,50 +28,50 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
-      setLoading(true); // sempre ativa o loading antes de atualizar
-
-      if (firebaseUser) {
-        try {
-          // Busca dados do Firestore
-          const docRef = doc(db, 'clientes', firebaseUser.uid);
-          const docSnap = await getDoc(docRef);
-
-          let nomeCliente: string | null = null;
-          let setorCliente: string | null = null;
-
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            nomeCliente = data.nome ?? null;
-            setorCliente = data.setor ?? null;
-          }
-
-          // 🔸 Espera o Firestore antes de atualizar o estado
-          setUser({
-            email: firebaseUser.email,
-            uid: firebaseUser.uid,
-            displayName: nomeCliente ?? firebaseUser.displayName ?? firebaseUser.email,
-            setor: setorCliente,
-          });
-        } catch (error) {
-          console.error('Erro ao buscar dados do cliente:', error);
-          setUser({
-            email: firebaseUser.email,
-            uid: firebaseUser.uid,
-            displayName: firebaseUser.displayName ?? firebaseUser.email,
-            setor: null,
-          });
-        }
-      } else {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!firebaseUser) {
         setUser(null);
+        setLoading(false);
+        return;
       }
 
-      // 🔸 Somente depois de tudo, desativa o loading
+      setLoading(true);
+
+      try {
+        const docRef = doc(db, "clientes", firebaseUser.uid);
+        const docSnap = await getDoc(docRef);
+
+        const data = docSnap.exists() ? docSnap.data() : {};
+
+        const nomeCliente = data.nome ?? firebaseUser.displayName ?? firebaseUser.email;
+        const setorCliente = data.setor ?? null;
+        const funcaoCliente = data.funcao ?? null;
+
+        setUser({
+          email: firebaseUser.email,
+          uid: firebaseUser.uid,
+          displayName: nomeCliente,
+          setor: setorCliente,
+          funcao: funcaoCliente,
+        });
+      } catch (err) {
+        console.error("Erro ao buscar dados do cliente:", err);
+
+        setUser({
+          email: firebaseUser.email,
+          uid: firebaseUser.uid,
+          displayName: firebaseUser.displayName ?? firebaseUser.email,
+          setor: null,
+          funcao: null,
+        });
+      }
+
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
+
 
   const logout = async () => {
     try {
