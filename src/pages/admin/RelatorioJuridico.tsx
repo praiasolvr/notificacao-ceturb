@@ -18,6 +18,7 @@ import {
     Legend,
 } from "chart.js";
 import { Pie, Bar } from "react-chartjs-2";
+
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 interface Notificacao {
@@ -50,33 +51,38 @@ const RelatorioJuridico: React.FC = () => {
     const [irrecorriveis, setIrrecorriveis] = useState(0);
     const [analiseEmProgresso, setAnaliseEmProgresso] = useState(false);
 
+    // Carregar grupos
     useEffect(() => {
         async function carregarGrupos() {
             setLoading(true);
             const snapshot = await getDocs(collection(db, "notificacoes"));
-            const grupos = snapshot.docs.map(doc => doc.id);
+            const grupos = snapshot.docs.map((doc) => doc.id);
             setGruposNotificacoes(grupos);
             setLoading(false);
         }
-
         carregarGrupos();
     }, []);
 
+    // Carregar notificações
     useEffect(() => {
-        if (gruposNotificacoes.length > 0) {
+        if (gruposNotificacoes.length > 0 && notificacoes.length === 0) {
             carregarNotificacoes();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gruposNotificacoes]);
 
     async function carregarNotificacoes() {
         setLoading(true);
+
+        const allSnaps = await Promise.all(
+            gruposNotificacoes.map((grupo) =>
+                getDocs(collection(db, "notificacoes", grupo, "notificacoes"))
+            )
+        );
+
         const todas: Notificacao[] = [];
-
-        for (const grupo of gruposNotificacoes) {
-            const ref = collection(db, "notificacoes", grupo, "notificacoes");
-            const snap = await getDocs(ref);
-
-            for (const doc of snap.docs) {
+        for (const snap of allSnaps) {
+            snap.forEach((doc) => {
                 const data = doc.data();
                 if (data?.data && data?.garg && data?.codigo) {
                     todas.push({
@@ -85,17 +91,18 @@ const RelatorioJuridico: React.FC = () => {
                         codigo: data.codigo,
                     });
                 }
-            }
+            });
         }
-
         setNotificacoes(todas);
         setLoading(false);
     }
 
+    // Analisar notificações (requisições paralelas)
     useEffect(() => {
         if (anoSel && mesSel !== null && gargSel) {
             analisarNotificacoes();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gargSel]);
 
     async function analisarNotificacoes() {
@@ -116,46 +123,31 @@ const RelatorioJuridico: React.FC = () => {
         let recorriveisCount = 0;
         let irrecorriveisCount = 0;
 
-        for (const n of notificacoesFiltradas) {
-            const grupo = n.data.split("/")[2] + n.data.split("/")[1].padStart(2, "0");
+        await Promise.all(
+            notificacoesFiltradas.map(async (n) => {
+                const grupo = n.data.split("/")[2] + n.data.split("/")[1].padStart(2, "0");
 
-            const comentariosRef = collection(
-                db,
-                "notificacoes",
-                grupo,
-                "notificacoes",
-                n.codigo,
-                "comentarios"
-            );
-            const comentariosSnap = await getDocs(comentariosRef);
-            if (!comentariosSnap.empty) {
-                comentadasCount++;
-            }
+                const [comentariosSnap, respostaDoc] = await Promise.all([
+                    getDocs(collection(db, "notificacoes", grupo, "notificacoes", n.codigo, "comentarios")),
+                    getDoc(doc(db, "notificacoes", grupo, "notificacoes", n.codigo, "julgamento", "resposta"))
+                ]);
 
-            const respostaRef = doc(
-                db,
-                "notificacoes",
-                grupo,
-                "notificacoes",
-                n.codigo,
-                "julgamento",
-                "resposta"
-            );
-            const respostaDoc = await getDoc(respostaRef);
+                if (!comentariosSnap.empty) comentadasCount++;
 
-            if (respostaDoc.exists()) {
-                const status = (respostaDoc.data()?.status || "")
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "")
-                    .toLowerCase();
+                if (respostaDoc.exists()) {
+                    const status = (respostaDoc.data()?.status || "")
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .toLowerCase();
 
-                if (status !== "em analise") {
-                    julgadasCount++;
-                    if (status === "recorrivel") recorriveisCount++;
-                    else if (status === "irrecorrivel") irrecorriveisCount++;
+                    if (status !== "em analise") {
+                        julgadasCount++;
+                        if (status === "recorrivel") recorriveisCount++;
+                        else if (status === "irrecorrivel") irrecorriveisCount++;
+                    }
                 }
-            }
-        }
+            })
+        );
 
         setComentadas(comentadasCount);
         setComJulgamento(julgadasCount);
@@ -197,6 +189,7 @@ const RelatorioJuridico: React.FC = () => {
         }).length;
     });
 
+    // Gráficos
     const chartMeses = {
         labels: mesesLabel,
         datasets: [{
@@ -227,10 +220,7 @@ const RelatorioJuridico: React.FC = () => {
         labels: ["Com julgamento", "Sem julgamento"],
         datasets: [
             {
-                data: [
-                    comJulgamento,
-                    total - comJulgamento
-                ],
+                data: [comJulgamento, total - comJulgamento],
                 backgroundColor: ["#007bff", "#ffc107"],
             },
         ],
@@ -243,7 +233,7 @@ const RelatorioJuridico: React.FC = () => {
                 data: [
                     recorriveis,
                     irrecorriveis,
-                    total - recorriveis - irrecorriveis
+                    total - recorriveis - irrecorriveis,
                 ],
                 backgroundColor: ["#17a2b8", "#dc3545", "#6c757d"],
             },
@@ -254,7 +244,6 @@ const RelatorioJuridico: React.FC = () => {
         maxWidth: 620,
         overflowX: "auto",
     };
-
     const handleMesClick = (_event: any, elements: any[]) => {
         if (elements.length > 0) {
             const index = elements[0].index;
@@ -274,7 +263,10 @@ const RelatorioJuridico: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+            <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ height: "100vh" }}
+            >
                 <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Carregando...</span>
                 </div>
@@ -313,7 +305,10 @@ const RelatorioJuridico: React.FC = () => {
 
             {mesSel !== null && (
                 <div className="mb-4">
-                    <h5>Notificações por empresa</h5>
+                    <h5>
+                        Notificações por empresa em{" "}
+                        {mesSel !== null && mesesLabel[mesSel] + " de " + anoSel}
+                    </h5>
                     <Bar data={chartGarg} options={{ onClick: handleGargClick }} />
                 </div>
             )}
