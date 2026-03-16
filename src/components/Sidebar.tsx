@@ -123,7 +123,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <FaHome style={iconStyle} /> Menu
         </Link>
 
-        {user?.setor === 'Cct' && (
+        {user?.setor === 'cct' && (
           <Link to="/importar-notificacoes" onClick={handleLinkClick}
             style={{ ...linkStyle, ...(location.pathname.startsWith('/importar-notificacoes') ? activeLinkStyle : {}) }}>
             <TbReport style={iconStyle} /> Importar Notificações

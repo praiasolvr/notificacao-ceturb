@@ -35,7 +35,7 @@ const Dashboard: React.FC = () => {
 
   // Definição das opções de menu
   const menuOptions = [
-    ...(user?.setor === 'Cct'
+    ...(user?.setor === 'cct'
       ? [
         {
           label: 'Importar Notificações',
