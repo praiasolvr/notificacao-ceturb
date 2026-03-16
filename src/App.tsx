@@ -30,6 +30,7 @@ import RelatorioNotificacoes from './pages/admin/RelatorioNotificacoes';
 import InformacoesNotificacoes from './pages/admin/InformacoesNotificacoes';
 import RelatorioJuridico from './pages/admin/RelatorioJuridico';
 import RelatorioFinanceiro from './pages/admin/RelatorioFinanceiro';
+import ConfigValorKm from './pages/admin/ConfigValorKm';
 
 
 function App() {
@@ -68,6 +69,7 @@ function App() {
               <Route path="/informacoes-notificacoes" element={<InformacoesNotificacoes />} />
               <Route path="/relatorio-juridico" element={<RelatorioJuridico />} />
               <Route path="/relatorio-financeiro" element={<RelatorioFinanceiro />} />
+              <Route path="/config-valor-km" element={<ConfigValorKm />} />
 
             </Route>
 
